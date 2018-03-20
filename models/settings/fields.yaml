@@ -1,0 +1,26 @@
+tabs:
+  fields:
+      logo:
+          label: Site Logo
+          type: mediafinder
+          mode: image
+          tab: General
+      currency:
+          label: Currency
+          default: USD
+          comment: 'Please see <a target="_blank" href="https://stripe.com/docs/currencies#charge-currencies">supported currencies</a>'
+          commentHtml: true
+          tab: General
+      pk_live:
+          label: Publishable Key
+          tab: Live keys
+      sk_live:
+          label: Secret Key
+          tab: Live keys
+      pk_test:
+          label: Publishable Key
+          tab: Test keys
+      sk_test:
+          label: Secret Key
+          tab: Test keys
+
