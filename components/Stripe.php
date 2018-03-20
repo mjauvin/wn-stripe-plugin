@@ -30,6 +30,7 @@ class Stripe extends ComponentBase
                 'title'             => 'Test Mode',
                 'description'       => 'enable stripe test mode',
                 'type'              => 'checkbox',
+                'default'           => false,
             ],
             'currency' => [
                 'title'             => 'Currency',
@@ -41,7 +42,7 @@ class Stripe extends ComponentBase
                 'title'             => 'Locale',
                 'description'       => 'Locale to use with Stripe',
                 'type'              => 'string',
-                'default'           => config('app.locale'),
+                'default'           => 'auto',
             ],
         ];
     }
@@ -50,13 +51,15 @@ class Stripe extends ComponentBase
     {
         $settings = new Settings;
 
-        $this->test_mode = $this->property('isTestMode') ? true : false;
-        $this->pub_key = $this->test_mode ? $settings::get('pk_test') : $settings::get('pk_live');
+        $this->pub_key = $this->property('isTestMode') ? $settings::get('pk_test') : $settings::get('pk_live');
+
         $this->secret_key = $this->test_mode ? $settings::get('sk_test') : $settings::get('sk_live');
 
         $this->locale = $this->property('locale');
         $this->currency = $this->property('currency');
-        $this->logo = $settings::get('logo');
+        if ($settings::get('logo')) {
+            $this->logo = url(config('cms.storage.media.path') . $settings::get('logo'));
+        }
         $this->name = config('app.name');
     }
 }

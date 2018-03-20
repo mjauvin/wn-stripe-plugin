@@ -1,12 +1,17 @@
+{% if __SELF__.pub_key %}
 <script
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ __SELF__.pub_key }}"
-{% if __SELF__.logo %}
-    data-image="{{ __SELF__.logo|media }}"
-{% endif %}
-    data-name="{{ __SELF__.name }}"
+    data-image="{{ __SELF__.logo|default('https://stripe.com/img/documentation/checkout/marketplace.png') }}"
+    data-name="{{ name|default(__SELF__.name) }}"
     data-currency="{{ __SELF__.currency|upper }}"
     data-locale="{{ __SELF__.locale }}"
+    data-label="{{ this.page.submit_label|default('Pay by credit card') }}"
     data-amount="{{ price * 100 }}"
-    data-description="{{ description }}">
+    data-description="{{ description|default('') }}">
 </script>
+{% else %}
+<div>
+  <h2>{{ "A publishable key MUST be defined"}}</h2>
+</div>
+{% endif %}
