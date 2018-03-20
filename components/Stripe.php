@@ -8,7 +8,7 @@ class Stripe extends ComponentBase
     public $pub_key;
     public $locale;
     public $currency;
-    public $name;
+    public $app_name;
     public $logo;
 
     public function componentDetails()
@@ -60,6 +60,6 @@ class Stripe extends ComponentBase
         if ($settings::get('logo')) {
             $this->logo = url(config('cms.storage.media.path') . $settings::get('logo'));
         }
-        $this->name = config('app.name');
+        $this->app_name = config('app.name');
     }
 }

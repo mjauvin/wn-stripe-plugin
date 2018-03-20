@@ -3,15 +3,15 @@
     src="https://checkout.stripe.com/checkout.js" class="stripe-button"
     data-key="{{ __SELF__.pub_key }}"
     data-image="{{ __SELF__.logo|default('https://stripe.com/img/documentation/checkout/marketplace.png') }}"
-    data-name="{{ name|default(__SELF__.name) }}"
     data-currency="{{ __SELF__.currency|upper }}"
     data-locale="{{ __SELF__.locale }}"
-    data-label="{{ this.page.submit_label|default('Pay by credit card') }}"
-    data-amount="{{ price * 100 }}"
-    data-description="{{ description|default('') }}">
+    data-name="{{ viewBag.app_name | default(__SELF__.app_name) }}"
+    data-label="{{ viewBag.submit_label | default('Pay by credit card') }}"
+    data-amount="{{ viewBag.order_amount * 100 }}"
+    data-description="{{ viewBag.order_description | default('') }}">
 </script>
 {% else %}
 <div>
-  <h2>{{ "A publishable key MUST be defined"}}</h2>
+  <h2>{{ "A Stripe publishable key MUST be defined in the plugin settings"}}</h2>
 </div>
 {% endif %}

@@ -2,11 +2,13 @@ tabs:
   fields:
       logo:
           label: Site Logo
+          comment: '(optional, square) <a target="_blank" href="https://stripe.com/docs/checkout#integration">more information</a>'
+          commentHtml: true
           type: mediafinder
           mode: image
           tab: General
       currency:
-          label: Currency
+          label: Default Currency
           default: USD
           comment: 'Please see <a target="_blank" href="https://stripe.com/docs/currencies#charge-currencies">supported currencies</a>'
           commentHtml: true
