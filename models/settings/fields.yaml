@@ -1,28 +1,28 @@
 tabs:
   fields:
       logo:
-          label: Site Logo
-          comment: '(optional, square) <a target="_blank" href="https://stripe.com/docs/checkout#integration">more information</a>'
+          label: 'studioazura.stripe::lang.fields.logo.label'
+          comment: 'studioazura.stripe::lang.fields.logo.comment'
           commentHtml: true
           type: mediafinder
           mode: image
-          tab: General
+          tab: 'studioazura.stripe::lang.tabs.general'
       currency:
-          label: Default Currency
+          label: 'studioazura.stripe::lang.fields.currency.label'
           default: USD
-          comment: 'Please see <a target="_blank" href="https://stripe.com/docs/currencies#charge-currencies">supported currencies</a>'
+          comment: 'studioazura.stripe::lang.fields.currency.comment'
           commentHtml: true
-          tab: General
+          tab: 'studioazura.stripe::lang.tabs.general'
       pk_live:
-          label: Publishable Key
-          tab: Live keys
+          label: 'studioazura.stripe::lang.fields.pub_key'
+          tab: 'studioazura.stripe::lang.tabs.live'
       sk_live:
-          label: Secret Key
-          tab: Live keys
+          label: 'studioazura.stripe::lang.fields.secret_key'
+          tab: 'studioazura.stripe::lang.tabs.live'
       pk_test:
-          label: Publishable Key
-          tab: Test keys
+          label: 'studioazura.stripe::lang.fields.pub_key'
+          tab: 'studioazura.stripe::lang.tabs.test'
       sk_test:
-          label: Secret Key
-          tab: Test keys
+          label: 'studioazura.stripe::lang.fields.secret_key'
+          tab: 'studioazura.stripe::lang.tabs.test'
 

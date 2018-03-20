@@ -66,4 +66,5 @@ class Stripe extends ComponentBase
         $this->locale = $this->property('locale');
         $this->currency = $this->property('currency');
     }
+
 }

@@ -1,5 +1,6 @@
 <?php namespace StudioAzura\Stripe;
 
+use Lang;
 use Backend;
 use System\Classes\PluginBase;
 
@@ -11,8 +12,8 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Stripe',
-            'description' => 'Stripe Payment integration',
+            'name'        => 'studioazura.stripe::lang.plugin.name',
+            'description' => 'studioazura.stripe::lang.plugin.description',
             'author'      => 'StudioAzura',
             'icon'        => 'icon-credit-card',
             'homepage'    => 'https://studioazura.com',
@@ -30,11 +31,11 @@ class Plugin extends PluginBase
     {
         return [
             'settings' => [
-                'label'       => 'Stripe',
-                'description' => 'Configure Stripe API',
+                'label'       => 'studioazura.stripe::lang.settings.label',
+                'description' => 'studioazura.stripe::lang.settings.description',
                 'icon'        => 'icon-credit-card',
                 'class'       => 'StudioAzura\Stripe\Models\Settings',
-                'keywords'    => 'stripe payment settings config',
+                'keywords'    => 'studioazura.stripe::lang.settings.keywords',
                 'order'       => 500,
                 'permissions' => ['studioazura.stripe.manage_settings'],
               ],
@@ -45,9 +46,18 @@ class Plugin extends PluginBase
     {
         return [
             'studioazura.stripe.manage_settings' => [
-                'label' => 'Manage Stripe Payment Settings',
-                'tab' => 'Stripe',
+                'label' => 'studioazura.stripe::lang.permissions.manage_settings.label',
+                'tab' => 'studioazura.stripe::lang.permissions.manage_settings.tab',
             ]
+        ];
+    }
+
+    public function registerMarkupTags()
+    {
+        return [
+            'functions' => [
+                'translate' => 'Lang::get',
+            ],
         ];
     }
 }
