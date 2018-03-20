@@ -47,7 +47,7 @@ class Stripe extends ComponentBase
         ];
     }
 
-    public function onRender()
+    public function onRun()
     {
         $settings = new Settings;
 
@@ -55,11 +55,15 @@ class Stripe extends ComponentBase
 
         $this->secret_key = $this->test_mode ? $settings::get('sk_test') : $settings::get('sk_live');
 
-        $this->locale = $this->property('locale');
-        $this->currency = $this->property('currency');
         if ($settings::get('logo')) {
             $this->logo = url(config('cms.storage.media.path') . $settings::get('logo'));
         }
         $this->app_name = config('app.name');
+    }
+
+    public function onRender()
+    {
+        $this->locale = $this->property('locale');
+        $this->currency = $this->property('currency');
     }
 }

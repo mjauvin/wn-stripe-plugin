@@ -5,10 +5,10 @@
     data-image="{{ __SELF__.logo|default('https://stripe.com/img/documentation/checkout/marketplace.png') }}"
     data-currency="{{ __SELF__.currency|upper }}"
     data-locale="{{ __SELF__.locale }}"
-    data-name="{{ viewBag.app_name | default(__SELF__.app_name) }}"
-    data-label="{{ viewBag.submit_label | default('Pay by credit card') }}"
-    data-amount="{{ viewBag.order_amount * 100 }}"
-    data-description="{{ viewBag.order_description | default('') }}">
+    data-name="{{ app_name | default(__SELF__.app_name) }}"
+    data-label="{{ submit_label | default('Pay by credit card') }}"
+    data-amount="{{ order_amount * 100 }}"
+    data-description="{{ order_description | default('') }}">
 </script>
 {% else %}
 <div>
