@@ -1,15 +1,50 @@
 {% if __SELF__.pub_key %}
-<script
-    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-    data-key="{{ __SELF__.pub_key }}"
-    data-image="{{ __SELF__.logo | default('https://stripe.com/img/documentation/checkout/marketplace.png') }}"
-    data-currency="{{ __SELF__.currency|upper }}"
-    data-locale="{{ __SELF__.locale }}"
-    data-name="{{ app_name | default(__SELF__.app_name) }}"
-    data-label="{{ submit_label | default('studioazura.stripe::lang.form.submit_label'|trans) }}"
-    data-amount="{{ order_amount * 100 }}"
-    data-description="{{ order_description | default('') }}">
-</script>
+<form>
+  <button id="stripe_checkout">{{ submit_label | default('studioazura.stripe::lang.form.submit_label'|trans) }}</button>
+  <div class="alert alert-{{ type }}" data-validate-error>
+    <p data-message></p>
+  </div>
+  {% put scripts %}
+  <script>
+    var handler = StripeCheckout.configure({
+      key: "{{ __SELF__.pub_key }}",
+      image: "{{ __SELF__.logo }}",
+      locale: "{{ __SELF__.locale }}",
+      currency: "{{ __SELF__.currency }}",
+      token: function(results) {
+        var invoice = {
+            'amount': {{ order_amount }},
+            'description': "{{ order_description | default('') }}",
+        };
+        console.log(results);
+        console.log(invoice);
+        $.request('{{ __SELF__ }}::onHandleForm', {
+            data: {'stripeData': results, 'invoiceData': invoice},
+            flash: true,
+            handleFlashMessage: function(message, type) {
+                $.oc.flashMsg({ text: message, class: type })
+            },
+        });
+      }
+    });
+
+    document.getElementById('stripe_checkout').addEventListener('click', function(e) {
+      // Open Checkout with further options:
+      handler.open({
+        name: "{{ app_name | default(__SELF__.app_name) }}",
+        description: "{{ order_description | default('') }}",
+        amount: {{ order_amount * 100 }},
+      });
+      e.preventDefault();
+    });
+
+    // Close Checkout on page navigation:
+    window.addEventListener('popstate', function() {
+      handler.close();
+    });
+  </script>
+  {% endput %}
+</form>
 {% else %}
 <div>
   <h2>{{ "A Stripe publishable key MUST be defined in the plugin settings"}}</h2>

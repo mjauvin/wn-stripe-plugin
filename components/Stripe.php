@@ -1,16 +1,14 @@
 <?php namespace StudioAzura\Stripe\Components;
 
+use Log;
+use Flash;
+use Http;
+use ValidationException;
 use Cms\Classes\ComponentBase;
 use StudioAzura\Stripe\Models\Settings;
 
 class Stripe extends ComponentBase
 {
-    public $pub_key;
-    public $locale;
-    public $currency;
-    public $app_name;
-    public $logo;
-
     public function componentDetails()
     {
         return [
@@ -21,9 +19,7 @@ class Stripe extends ComponentBase
 
     public function defineProperties()
     {
-        $settings = new Settings;
-
-        $currency = $settings::get('currency') ? $settings::get('currency') : 'USD';
+        $currency = Settings::get('currency') ? Settings::get('currency') : 'USD';
 
         return [
             'isTestMode' => [
@@ -49,22 +45,97 @@ class Stripe extends ComponentBase
 
     public function onRun()
     {
-        $settings = new Settings;
-
-        $this->pub_key = $this->property('isTestMode') ? $settings::get('pk_test') : $settings::get('pk_live');
-
-        $this->secret_key = $this->test_mode ? $settings::get('sk_test') : $settings::get('sk_live');
-
-        if ($settings::get('logo')) {
-            $this->logo = url(config('cms.storage.media.path') . $settings::get('logo'));
+        if ($this->pub_key()) {
+            $this->addJs('https://checkout.stripe.com/checkout.js');
         }
-        $this->app_name = config('app.name');
     }
 
-    public function onRender()
+    public function locale()
     {
-        $this->locale = $this->property('locale');
-        $this->currency = $this->property('currency');
+        return $this->property('locale');
     }
 
+    public function currency()
+    {
+        return strtoupper($this->property('currency'));
+    }
+
+    public function app_name()
+    {
+        return config('app.name');
+    }
+
+    public function logo()
+    {
+        $logo = Settings::get('logo');
+        if ($logo) {
+            return url(config('cms.storage.media.path') . $logo);
+        } else {
+            return 'https://stripe.com/img/documentation/checkout/marketplace.png';
+        }
+    }
+
+    public function pub_key()
+    {
+        if ($this->property('isTestMode')) {
+            return Settings::get('pk_test');
+        } else {
+            return Settings::get('pk_live');
+        }
+    }
+    protected function secret_key()
+    {
+        if ($this->property('isTestMode')) {
+            return Settings::get('sk_test');
+        } else {
+            return Settings::get('sk_live');
+        }
+    }
+
+    protected function stripe_url()
+    {
+        return "https://api.stripe.com/v1";
+    }
+
+    public function onHandleForm()
+    {
+        $stripe = post('stripeData');
+        $invoice = post('invoiceData');
+
+        $meta = array(
+            '_email' => $stripe['email'],
+            '_client_ip' => $stripe['client_ip'],
+        );
+        $data = array( 
+          'source' => $stripe['id'],
+          'amount' => $invoice['amount'] * 100,
+          'capture' => 'true',
+          'currency' => $this->property('currency'),
+          'description' => $invoice['description'],
+          'metadata' => $meta,
+        );
+        $request = Http::make($this->stripe_url() . '/charges', 'POST');
+        $request->auth($this->secret_key());
+        $request->data($data);
+        $response = $request->send();
+
+        if ($response->code != 200 && !$response->body) {
+            Log::error( var_export(array('response'=>$response, 'request'=>$request->requestData), true) );
+            Flash::error( 'Fatal Communication Error' );
+            return;
+        }
+        $results = json_decode($response->body, true);
+        if (isset($results['error'])) {
+            Log::error( var_export(array('error'=>$results['error'], 'request'=>$request->requestData), true) );
+            Flash::error( 'Something went wrong' );
+            return;
+        }
+        if ($results['paid'] && $results['captured']) {
+            Log::info( var_export($results, true) );
+            Flash::success('Payment Status: ' . $results['status']);
+        } else {
+            Log::error( var_export($results, true) );
+            Flash::error('Something went wrong; Payment Status: ' . $results['status']);
+        }
+    }
 }
