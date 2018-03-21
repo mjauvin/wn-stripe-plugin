@@ -2,6 +2,7 @@
 
 use Log;
 use Flash;
+use Redirect;
 use Http;
 use ValidationException;
 use Cms\Classes\ComponentBase;
@@ -97,26 +98,26 @@ class Stripe extends ComponentBase
         return "https://api.stripe.com/v1";
     }
 
-    public function onHandleForm()
+    public function onStripeCallback()
     {
         $stripe = post('stripeData');
         $invoice = post('invoiceData');
+        $redirect = post('redirect');
 
-        $meta = array(
-            '_email' => $stripe['email'],
-            '_client_ip' => $stripe['client_ip'],
-        );
-        $data = array( 
+        $postData = array( 
           'source' => $stripe['id'],
           'amount' => $invoice['amount'] * 100,
           'capture' => 'true',
           'currency' => $this->property('currency'),
           'description' => $invoice['description'],
-          'metadata' => $meta,
+          'metadata' => array(
+            '_email' => $stripe['email'],
+            '_client_ip' => $stripe['client_ip'],
+          ),
         );
         $request = Http::make($this->stripe_url() . '/charges', 'POST');
         $request->auth($this->secret_key());
-        $request->data($data);
+        $request->data($postData);
         $response = $request->send();
 
         if ($response->code != 200 && !$response->body) {
@@ -132,10 +133,13 @@ class Stripe extends ComponentBase
         }
         if ($results['paid'] && $results['captured']) {
             Log::info( var_export($results, true) );
-            Flash::success('Payment Status: ' . $results['status']);
+            $msg = 'Payment Status: ' . $results['status'];
+            Flash::success($msg);
+            return Redirect::to($redirect);
         } else {
             Log::error( var_export($results, true) );
             Flash::error('Something went wrong; Payment Status: ' . $results['status']);
+            return;
         }
     }
 }

@@ -1,12 +1,10 @@
 {% if __SELF__.pub_key %}
 <form>
   <button id="stripe_checkout">{{ submit_label | default('studioazura.stripe::lang.form.submit_label'|trans) }}</button>
-  <div class="alert alert-{{ type }}" data-validate-error>
-    <p data-message></p>
-  </div>
   {% put scripts %}
   <script>
-    var handler = StripeCheckout.configure({
+    var redirect_url = "{{ redirect_url | default('/') }}";
+    var checkout = StripeCheckout.configure({
       key: "{{ __SELF__.pub_key }}",
       image: "{{ __SELF__.logo }}",
       locale: "{{ __SELF__.locale }}",
@@ -16,10 +14,8 @@
             'amount': {{ order_amount }},
             'description': "{{ order_description | default('') }}",
         };
-        console.log(results);
-        console.log(invoice);
-        $.request('{{ __SELF__ }}::onHandleForm', {
-            data: {'stripeData': results, 'invoiceData': invoice},
+        return $.request('{{ __SELF__ }}::onStripeCallback', {
+            data: {'stripeData': results, 'invoiceData': invoice, 'redirect': redirect_url },
             flash: true,
             handleFlashMessage: function(message, type) {
                 $.oc.flashMsg({ text: message, class: type })
@@ -29,8 +25,7 @@
     });
 
     document.getElementById('stripe_checkout').addEventListener('click', function(e) {
-      // Open Checkout with further options:
-      handler.open({
+      checkout.open({
         name: "{{ app_name | default(__SELF__.app_name) }}",
         description: "{{ order_description | default('') }}",
         amount: {{ order_amount * 100 }},
@@ -38,13 +33,13 @@
       e.preventDefault();
     });
 
-    // Close Checkout on page navigation:
     window.addEventListener('popstate', function() {
-      handler.close();
+      checkout.close();
     });
   </script>
   {% endput %}
 </form>
+
 {% else %}
 <div>
   <h2>{{ "A Stripe publishable key MUST be defined in the plugin settings"}}</h2>
