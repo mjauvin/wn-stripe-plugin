@@ -105,21 +105,7 @@ class Stripe extends ComponentBase
         $invoice = post('invoiceData');
         $redirect = post('redirect');
 
-        $postData = array( 
-          'source' => $stripe['id'],
-          'amount' => $invoice['amount'] * 100,
-          'capture' => 'true',
-          'currency' => $this->property('currency'),
-          'description' => $invoice['description'],
-          'metadata' => array(
-            '_email' => $stripe['email'],
-            '_client_ip' => $stripe['client_ip'],
-          ),
-        );
-        $request = Http::make($this->stripe_url() . '/charges', 'POST');
-        $request->auth($this->secret_key());
-        $request->data($postData);
-        $response = $request->send();
+        $response = $this->stripe_charge($stripe, $invoice);
 
         if ($response->code != 200 && !$response->body) {
             Log::error( var_export(array('response'=>$response, 'request'=>$request->requestData), true) );
@@ -142,5 +128,25 @@ class Stripe extends ComponentBase
             Flash::error('Something went wrong; Payment Status: ' . $results['status']);
             return;
         }
+    }
+
+    protected function stripe_charge($stripe, $invoice)
+    {
+        $postData = array( 
+          'source' => $stripe['id'],
+          'amount' => $invoice['amount'] * 100,
+          'capture' => 'true',
+          'currency' => $this->property('currency'),
+          'description' => $invoice['description'],
+          'metadata' => array(
+            'email' => $stripe['email'],
+            'client_ip' => $stripe['client_ip'],
+          ),
+        );
+        $request = Http::make($this->stripe_url() . '/charges', 'POST');
+        $request->auth($this->secret_key());
+        $request->data($postData);
+
+        return $request->send();
     }
 }
