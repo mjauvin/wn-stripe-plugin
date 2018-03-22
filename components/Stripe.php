@@ -1,15 +1,17 @@
 <?php namespace StudioAzura\Stripe\Components;
 
-use Log;
 use Flash;
-use Redirect;
 use Http;
+use Log;
+use Redirect;
 use ValidationException;
 use Cms\Classes\ComponentBase;
 use StudioAzura\Stripe\Models\Settings;
 
 class Stripe extends ComponentBase
 {
+    public $stripe_url = "https://api.stripe.com/v1";
+
     public function componentDetails()
     {
         return [
@@ -42,14 +44,6 @@ class Stripe extends ComponentBase
                 'default'           => 'auto',
             ],
         ];
-    }
-
-    public function onRun()
-    {
-        if ($this->pub_key()) {
-            $this->addJs('https://checkout.stripe.com/checkout.js');
-            $this->addJs('assets/js/ajax.js');
-        }
     }
 
     public function locale()
@@ -94,9 +88,12 @@ class Stripe extends ComponentBase
         }
     }
 
-    protected function stripe_url()
+    public function onRun()
     {
-        return "https://api.stripe.com/v1";
+        if ($this->pub_key()) {
+            $this->addJs('https://checkout.stripe.com/checkout.js');
+            $this->addJs('assets/js/ajax.js');
+        }
     }
 
     public function onStripeCallback()
@@ -143,7 +140,7 @@ class Stripe extends ComponentBase
             'client_ip' => $stripe['client_ip'],
           ),
         );
-        $request = Http::make($this->stripe_url() . '/charges', 'POST');
+        $request = Http::make($this->stripe_url . '/charges', 'POST');
         $request->auth($this->secret_key());
         $request->data($postData);
 

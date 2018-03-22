@@ -1,9 +1,10 @@
-{% if __SELF__.pub_key %}
+{% if not __SELF__.pub_key %}
+  <div>
+    <h2>{{ "A Stripe publishable key MUST be defined in the plugin settings"}}</h2>
+  </div>
+{% else %}
   {% put scripts %}
   <script>
-    var order_amount = $('#order_amount').val();
-    var order_description = $('#order_description').val();
-    var invoice = { 'amount': order_amount, 'description': order_description };
     var checkout = StripeCheckout.configure({
       key: "{{ __SELF__.pub_key }}",
       image: "{{ __SELF__.logo }}",
@@ -11,27 +12,28 @@
       currency: "{{ __SELF__.currency }}",
       token: function(results) {
         $.request('{{ __SELF__ }}::onStripeCallback', {
-            data: {'stripeData': results, 'invoiceData': invoice, 'redirect': $('#redirect_url').val() },
+            data: {'stripeData': results, 'invoiceData': get_order_data(), 'redirect': $('#redirect_url').val() },
         });
       }
     });
 
     $('#stripe_checkout').click(function(e) {
+      order_data = get_order_data();
       checkout.open({
         name: "{{ app_name | default(__SELF__.app_name) }}",
-        amount: order_amount * 100,
-        description: order_description,
+        amount: order_data.amount * 100,
+        description: order_data.description,
       });
       e.preventDefault();
     });
+
+    function get_order_data() {
+      return {'amount': $('#order_amount').val(), 'description': $('#order_description').val()}
+    }
 
     window.addEventListener('popstate', function() {
       checkout.close();
     });
   </script>
   {% endput %}
-{% else %}
-<div>
-  <h2>{{ "A Stripe publishable key MUST be defined in the plugin settings"}}</h2>
-</div>
 {% endif %}
