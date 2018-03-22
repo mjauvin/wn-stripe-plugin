@@ -77,6 +77,8 @@ The following public variables are available in the component:
 	Set to config(app.name)
 - pubKey
 	Point to the publishable key for the component's mode (live or test)
+- secretKey
+	Point to the secret key for the component's mode (live or test)
 - logo
 	Optional, defaults to Stripe marketplace logo
 - locale
@@ -138,3 +140,70 @@ The default markup injects the stripe code in the scripts anonymous placeholder 
       </script>
       {% endput %}
     {% endif %}
+
+## Hooking into this plugin
+
+You can hook into the following events from the page php code block:
+
+    [stripe]
+    isTestMode = "true"
+    ==
+    function onInit()
+    {
+        $component = $this['stripe'];
+    
+        $component->bindEvent('studioazure.stripe.handleStripeCallback', function($self, $stripe, $invoice, $address, $redirect) {
+            // Code to bypass the plugin and handle the payment
+        });
+    
+        $component->bindEvent('studioazura.stripe.setChargePostData', function($self, $stripe, $invoice, $address) {
+            // Code to setup the payment data before the payment request has been sent to stripe
+        });
+    
+        $component->bindEvent('studioazura.stripe.handleStripeChargeResponse', function($self, $response, $redirect) {
+            // Code to handle the response after the payment request has been sent to stripe
+        });
+    }
+    ==
+    {# page twig code here #}
+    ...
+
+Here is an example to setup the postData for the stripe charges API call from a hook:
+
+    title = "test"
+    url = "/test"
+    layout = "no-banner"
+    is_hidden = 0
+    
+    [stripe]
+    isTestMode = true
+    locale = "auto"
+    ==
+    function onInit()
+    {
+        $this['stripe']->bindEvent('studioazura.stripe.setChargePostData', function($self, $stripe, $invoice, $address) {
+            return array( 
+              'source' => $stripe['id'],
+              'amount' => $invoice['amount'] * 100,
+              'capture' => 'true',
+              'currency' => $self->property('currency'),
+              'description' => 'My Overriden Description',
+              'metadata' => array(
+                'email' => 'new-email@domain.tld',
+                'client_ip' => '1.2.3.4',
+		'extra' => 'additional data',
+              ),
+            );
+        });
+    }
+    ==
+    <h2>My Order</h2>
+    <form>
+      <input type="hidden" id="redirectUrl" value="/thankyou">
+      <input type="hidden" id="emailAddress" value="user@domain.tld">
+      <input type="hidden" id="orderDescription" value="My Order Description">
+      <input type="hidden" id="orderAmount" value="34.95">
+      <button id="stripeCheckout">Checkout</button>
+    </form>
+    {% component 'stripe' %}
+    
