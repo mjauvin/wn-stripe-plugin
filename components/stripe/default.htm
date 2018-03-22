@@ -1,21 +1,17 @@
 {% if __SELF__.pub_key %}
-<form>
-  <button id="stripe_checkout">{{ submit_label | default('studioazura.stripe::lang.form.submit_label'|trans) }}</button>
   {% put scripts %}
   <script>
-    var redirect_url = "{{ redirect_url | default('/') }}";
+    var order_amount = $('#order_amount').val();
+    var order_description = $('#order_description').val();
     var checkout = StripeCheckout.configure({
       key: "{{ __SELF__.pub_key }}",
       image: "{{ __SELF__.logo }}",
       locale: "{{ __SELF__.locale }}",
       currency: "{{ __SELF__.currency }}",
       token: function(results) {
-        var invoice = {
-            'amount': {{ order_amount }},
-            'description': "{{ order_description | default('') }}",
-        };
+        var invoice = { 'amount': order_amount, 'description': order_description };
         return $.request('{{ __SELF__ }}::onStripeCallback', {
-            data: {'stripeData': results, 'invoiceData': invoice, 'redirect': redirect_url },
+            data: {'stripeData': results, 'invoiceData': invoice, 'redirect': "{{ redirect_url | default('/') }}" },
             flash: true,
             handleFlashMessage: function(message, type) {
                 $.oc.flashMsg({ text: message, class: type })
@@ -24,11 +20,11 @@
       }
     });
 
-    document.getElementById('stripe_checkout').addEventListener('click', function(e) {
+    $('#stripe_checkout').click(function(e) {
       checkout.open({
         name: "{{ app_name | default(__SELF__.app_name) }}",
-        description: "{{ order_description | default('') }}",
-        amount: {{ order_amount * 100 }},
+        amount: order_amount * 100,
+        description: order_description,
       });
       e.preventDefault();
     });
@@ -38,8 +34,6 @@
     });
   </script>
   {% endput %}
-</form>
-
 {% else %}
 <div>
   <h2>{{ "A Stripe publishable key MUST be defined in the plugin settings"}}</h2>
