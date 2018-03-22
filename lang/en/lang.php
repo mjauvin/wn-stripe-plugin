@@ -17,6 +17,18 @@
             'label' => 'Default Currency',
             'comment' => 'Please see <a target="_blank" href="https://stripe.com/docs/currencies#charge-currencies">supported currencies</a>',
         ],
+        'is_billing_address' => [
+            'label' => 'Collect Billing Address',
+            'comment' => 'Whether billing address information should be collected',
+        ],
+        'is_shipping_address' => [
+            'label' => 'Collect Shipping Address',
+            'comment' => 'Whether shipping address information should be collected',
+        ],
+        'is_zip_code' => [
+            'label' => 'Validate Billing Postal Code',
+            'comment' => 'Whether billing postal code should be validated',
+        ],
         'pub_key' => 'Publishable Key',
         'secret_key' => 'Secret Key',
     ],

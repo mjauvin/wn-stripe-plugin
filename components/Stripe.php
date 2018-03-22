@@ -1,5 +1,6 @@
 <?php namespace StudioAzura\Stripe\Components;
 
+use Event;
 use Flash;
 use Http;
 use Log;
@@ -10,7 +11,7 @@ use StudioAzura\Stripe\Models\Settings;
 
 class Stripe extends ComponentBase
 {
-    public $stripe_url = "https://api.stripe.com/v1";
+    public $stripeUrl = "https://api.stripe.com/v1";
 
     public function componentDetails()
     {
@@ -56,7 +57,21 @@ class Stripe extends ComponentBase
         return strtoupper($this->property('currency'));
     }
 
-    public function app_name()
+    public function billingAddress()
+    {
+        return Settings::get('is_billing_address');
+    }
+
+    public function shippingAddress()
+    {
+        return Settings::get('is_shipping_address');
+    }
+    public function zipCode()
+    {
+        return Settings::get('is_zip_code');
+    }
+
+    public function appName()
     {
         return config('app.name');
     }
@@ -71,7 +86,7 @@ class Stripe extends ComponentBase
         }
     }
 
-    public function pub_key()
+    public function pubKey()
     {
         if ($this->property('isTestMode')) {
             return Settings::get('pk_test');
@@ -79,7 +94,7 @@ class Stripe extends ComponentBase
             return Settings::get('pk_live');
         }
     }
-    protected function secret_key()
+    protected function secretKey()
     {
         if ($this->property('isTestMode')) {
             return Settings::get('sk_test');
@@ -90,19 +105,28 @@ class Stripe extends ComponentBase
 
     public function onRun()
     {
-        if ($this->pub_key()) {
-            $this->addJs('https://checkout.stripe.com/checkout.js');
-            $this->addJs('assets/js/ajax.js');
-        }
+        $this->addJs('assets/js/ajax.js');
     }
 
     public function onStripeCallback()
     {
         $stripe = post('stripeData');
         $invoice = post('invoiceData');
+        $address = post('addressData');
         $redirect = post('redirect');
 
-        $response = $this->stripe_charge($stripe, $invoice);
+        // hook before stripe_charge()
+        // if the hook return something, bypass the stripe_charge() call
+        if (Event::fire('studioazura.stripe.beforeStripeCharge', [ $stripe, $invoice, $address, $redirect ], true)) {
+            return;
+        }
+
+        $response = $this->stripe_charge($stripe, $invoice, $address);
+
+        // hook to handle routing after stripe_charge()
+        if (Event::fire('studioazura.stripe.afterStripeCharge', [ $response ], true)) {
+            return;
+        }
 
         if ($response->code != 200 && !$response->body) {
             Log::error( var_export(array('response'=>$response, 'request'=>$request->requestData), true) );
@@ -127,21 +151,25 @@ class Stripe extends ComponentBase
         }
     }
 
-    protected function stripe_charge($stripe, $invoice)
+    protected function stripe_charge($stripe, $invoice, $address)
     {
-        $postData = array( 
-          'source' => $stripe['id'],
-          'amount' => $invoice['amount'] * 100,
-          'capture' => 'true',
-          'currency' => $this->property('currency'),
-          'description' => $invoice['description'],
-          'metadata' => array(
-            'email' => $stripe['email'],
-            'client_ip' => $stripe['client_ip'],
-          ),
-        );
-        $request = Http::make($this->stripe_url . '/charges', 'POST');
-        $request->auth($this->secret_key());
+        $postData = Event::fire('studioazura.stripe.setChargePostData', [ $stripe, $invoice, $address ], true);
+
+        if (!$postData) {
+            $postData = array( 
+              'source' => $stripe['id'],
+              'amount' => $invoice['amount'] * 100,
+              'capture' => 'true',
+              'currency' => $this->property('currency'),
+              'description' => $invoice['description'],
+              'metadata' => array(
+                'email' => $stripe['email'],
+                'client_ip' => $stripe['client_ip'],
+              ),
+            );
+        }
+        $request = Http::make($this->stripeUrl . '/charges', 'POST');
+        $request->auth($this->secretKey());
         $request->data($postData);
 
         return $request->send();

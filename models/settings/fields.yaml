@@ -13,6 +13,24 @@ tabs:
           comment: 'studioazura.stripe::lang.fields.currency.comment'
           commentHtml: true
           tab: 'studioazura.stripe::lang.tabs.general'
+      is_billing_address:
+          label: 'studioazura.stripe::lang.fields.is_billing_address.label'
+          comment: 'studioazura.stripe::lang.fields.is_billing_address.comment'
+          type: switch
+          default: 'off'
+          tab: 'studioazura.stripe::lang.tabs.general'
+      is_shipping_address:
+          label: 'studioazura.stripe::lang.fields.is_shipping_address.label'
+          comment: 'studioazura.stripe::lang.fields.is_shipping_address.comment'
+          type: switch
+          default: 'off'
+          tab: 'studioazura.stripe::lang.tabs.general'
+      is_zip_code:
+          label: 'studioazura.stripe::lang.fields.is_zip_code.label'
+          comment: 'studioazura.stripe::lang.fields.is_zip_code.comment'
+          type: switch
+          default: 'off'
+          tab: 'studioazura.stripe::lang.tabs.general'
       pk_live:
           label: 'studioazura.stripe::lang.fields.pub_key'
           tab: 'studioazura.stripe::lang.tabs.live'
