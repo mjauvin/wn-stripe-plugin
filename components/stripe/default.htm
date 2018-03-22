@@ -3,19 +3,15 @@
   <script>
     var order_amount = $('#order_amount').val();
     var order_description = $('#order_description').val();
+    var invoice = { 'amount': order_amount, 'description': order_description };
     var checkout = StripeCheckout.configure({
       key: "{{ __SELF__.pub_key }}",
       image: "{{ __SELF__.logo }}",
       locale: "{{ __SELF__.locale }}",
       currency: "{{ __SELF__.currency }}",
       token: function(results) {
-        var invoice = { 'amount': order_amount, 'description': order_description };
-        return $.request('{{ __SELF__ }}::onStripeCallback', {
-            data: {'stripeData': results, 'invoiceData': invoice, 'redirect': "{{ redirect_url | default('/') }}" },
-            flash: true,
-            handleFlashMessage: function(message, type) {
-                $.oc.flashMsg({ text: message, class: type })
-            },
+        $.request('{{ __SELF__ }}::onStripeCallback', {
+            data: {'stripeData': results, 'invoiceData': invoice, 'redirect': $('#redirect_url').val() },
         });
       }
     });

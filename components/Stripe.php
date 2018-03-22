@@ -48,6 +48,7 @@ class Stripe extends ComponentBase
     {
         if ($this->pub_key()) {
             $this->addJs('https://checkout.stripe.com/checkout.js');
+            $this->addJs('assets/js/ajax.js');
         }
     }
 
