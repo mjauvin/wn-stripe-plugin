@@ -117,8 +117,8 @@ class Stripe extends ComponentBase
 
         // hook before stripe_charge()
         // if the hook returns something true, bypass the stripe_charge() call
-        if( $this->fireEvent('studioazura.stripe.handleStripeCallback', [ $stripe, $invoice, $address, $redirect ], true) ||
-            Event::fire('studioazura.stripe.handleStripeCallback', [ $stripe, $invoice, $address, $redirect ], true)
+        if( $this->fireEvent('studioazura.stripe.handleStripeCallback', [ $this, $stripe, $invoice, $address, $redirect ], true) ||
+            Event::fire('studioazura.stripe.handleStripeCallback', [ $this, $stripe, $invoice, $address, $redirect ], true)
         ) {
             return;
         }
@@ -152,8 +152,8 @@ class Stripe extends ComponentBase
         $response = $request->send();
 
         // hook to handle routing after stripe_charge()
-        if( ($results = $this->fireEvent('studioazura.stripe.handleStripeChargeResponse', [ $response, $redirect ])) || 
-            ($results = Event::fire('studioazura.stripe.handleStripeChargeResponse', [ $response, $redirect ]))
+        if( ($results = $this->fireEvent('studioazura.stripe.handleStripeChargeResponse', [ $this, $response, $redirect ])) || 
+            ($results = Event::fire('studioazura.stripe.handleStripeChargeResponse', [ $this, $response, $redirect ]))
         ) {
             return $results;
         }
