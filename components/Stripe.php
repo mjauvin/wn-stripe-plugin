@@ -94,7 +94,7 @@ class Stripe extends ComponentBase
             return Settings::get('pk_live');
         }
     }
-    protected function secretKey()
+    public function secretKey()
     {
         if ($this->property('isTestMode')) {
             return Settings::get('sk_test');
@@ -116,16 +116,46 @@ class Stripe extends ComponentBase
         $redirect = post('redirect');
 
         // hook before stripe_charge()
-        // if the hook return something, bypass the stripe_charge() call
-        if (Event::fire('studioazura.stripe.beforeStripeCharge', [ $stripe, $invoice, $address, $redirect ], true)) {
+        // if the hook returns something true, bypass the stripe_charge() call
+        if( $this->fireEvent('studioazura.stripe.handleStripeCallback', [ $stripe, $invoice, $address, $redirect ], true) ||
+            Event::fire('studioazura.stripe.handleStripeCallback', [ $stripe, $invoice, $address, $redirect ], true)
+        ) {
             return;
         }
 
-        $response = $this->stripe_charge($stripe, $invoice, $address);
+        return $this->stripe_charge($stripe, $invoice, $address, $redirect);
+    }
+
+    public function stripe_charge($stripe, $invoice, $address, $redirect)
+    {
+        if(!(($postData = $this->fireEvent('studioazura.stripe.setChargePostData', [ $this, $stripe, $invoice, $address ], true)) ||
+            ($postData = Event::fire('studioazura.stripe.setChargePostData', [ $this, $stripe, $invoice, $address ], true)))
+        ) {
+            $postData = array( 
+              'source' => $stripe['id'],
+              'amount' => $invoice['amount'] * 100,
+              'capture' => 'true',
+              'currency' => $this->property('currency'),
+              'description' => $invoice['description'],
+              'metadata' => array(
+                'email' => $stripe['email'],
+                'client_ip' => $stripe['client_ip'],
+              ),
+            );
+        }
+        Log::info( var_export($postData, true) );
+
+        $request = Http::make($this->stripeUrl . '/charges', 'POST');
+        $request->auth($this->secretKey());
+        $request->data($postData);
+
+        $response = $request->send();
 
         // hook to handle routing after stripe_charge()
-        if (Event::fire('studioazura.stripe.afterStripeCharge', [ $response ], true)) {
-            return;
+        if( ($results = $this->fireEvent('studioazura.stripe.handleStripeChargeResponse', [ $response, $redirect ])) || 
+            ($results = Event::fire('studioazura.stripe.handleStripeChargeResponse', [ $response, $redirect ]))
+        ) {
+            return $results;
         }
 
         if ($response->code != 200 && !$response->body) {
@@ -149,29 +179,5 @@ class Stripe extends ComponentBase
             Flash::error('Something went wrong; Payment Status: ' . $results['status']);
             return;
         }
-    }
-
-    protected function stripe_charge($stripe, $invoice, $address)
-    {
-        $postData = Event::fire('studioazura.stripe.setChargePostData', [ $stripe, $invoice, $address ], true);
-
-        if (!$postData) {
-            $postData = array( 
-              'source' => $stripe['id'],
-              'amount' => $invoice['amount'] * 100,
-              'capture' => 'true',
-              'currency' => $this->property('currency'),
-              'description' => $invoice['description'],
-              'metadata' => array(
-                'email' => $stripe['email'],
-                'client_ip' => $stripe['client_ip'],
-              ),
-            );
-        }
-        $request = Http::make($this->stripeUrl . '/charges', 'POST');
-        $request->auth($this->secretKey());
-        $request->data($postData);
-
-        return $request->send();
     }
 }
