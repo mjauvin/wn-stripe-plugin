@@ -129,22 +129,24 @@ class Stripe extends ComponentBase
 
     public function stripe_charge($stripe, $invoice, $address, $redirect)
     {
-        $signal = 'studioazura.stripe.setChargePostData';
-        $params = [ $this, $stripe, $invoice, $address ];
+        $postData = array( 
+          'source' => $stripe['id'],
+          'amount' => $invoice['amount'] * 100,
+          'capture' => 'true',
+          'currency' => $this->property('currency'),
+          'description' => $invoice['description'],
+          'metadata' => array(
+            'email' => $stripe['email'],
+            'client_ip' => $stripe['client_ip'],
+          ),
+        );
 
-        if(!( ($postData = $this->fireEvent($signal, $params, true)) || ($postData = Event::fire($signal, $params, true)) )) {
-            $postData = array( 
-              'source' => $stripe['id'],
-              'amount' => $invoice['amount'] * 100,
-              'capture' => 'true',
-              'currency' => $this->property('currency'),
-              'description' => $invoice['description'],
-              'metadata' => array(
-                'email' => $stripe['email'],
-                'client_ip' => $stripe['client_ip'],
-              ),
-            );
-        }
+        $signal = 'studioazura.stripe.setChargePostData';
+        $params = [ $this, &$postData, $stripe, $invoice, $address ];
+
+        $this->fireEvent($signal, $params, true);
+        Event::fire($signal, $params, true);
+
         Log::info( var_export($postData, true) );
 
         $request = Http::make($this->stripeUrl . '/charges', 'POST');

@@ -156,8 +156,8 @@ You can hook into the following events from the page php code block:
             // Code to bypass the plugin and handle the payment
         });
     
-        $component->bindEvent('studioazura.stripe.setChargePostData', function($self, $stripe, $invoice, $address) {
-            // Code to setup the payment data before the payment request has been sent to stripe
+        $component->bindEvent('studioazura.stripe.setChargePostData', function($self, &$postData, $stripe, $invoice, $address) {
+            // Code to modify the payment data before the payment request has been sent to stripe
         });
     
         $component->bindEvent('studioazura.stripe.handleStripeChargeResponse', function($self, $response, $redirect) {
@@ -181,19 +181,11 @@ Here is an example to setup the postData for the stripe charges API call from a 
     ==
     function onInit()
     {
-        $this['stripe']->bindEvent('studioazura.stripe.setChargePostData', function($self, $stripe, $invoice, $address) {
-            return array( 
-              'source' => $stripe['id'],
-              'amount' => $invoice['amount'] * 100,
-              'capture' => 'true',
-              'currency' => $self->property('currency'),
-              'description' => 'My Overriden Description',
-              'metadata' => array(
-                'email' => 'new-email@domain.tld',
-                'client_ip' => '1.2.3.4',
-		'extra' => 'additional data',
-              ),
-            );
+        $this['stripe']->bindEvent('studioazura.stripe.setChargePostData', function($self, &$postData, $stripe, $invoice, $address) {
+            // override amount and description; add key to metadata
+            $postData['amount'] = 29.99 * 100;
+            $postData['description'] = 'My Overriden Description';
+            $postData['metadata']['new_info'] = 'new value';
         });
     }
     ==
