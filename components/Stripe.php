@@ -153,7 +153,7 @@ class Stripe extends ComponentBase
 
         $response = $request->send();
 
-        $signal 'studioazura.stripe.handleStripeChargeResponse';
+        $signal = 'studioazura.stripe.handleStripeChargeResponse';
         $params = [ $this, $response, $redirect ];
 
         // hook to handle routing after stripe_charge()
