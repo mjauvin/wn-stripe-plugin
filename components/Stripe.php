@@ -115,12 +115,13 @@ class Stripe extends ComponentBase
         $address = post('addressData');
         $redirect = post('redirect');
 
+        $signal = 'studioazura.stripe.handleStripeCallback';
+        $params = [ $this, $stripe, $invoice, $address, $redirect ];
+
         // hook before stripe_charge()
         // if the hook returns something true, bypass the stripe_charge() call
-        if( $this->fireEvent('studioazura.stripe.handleStripeCallback', [ $this, $stripe, $invoice, $address, $redirect ], true) ||
-            Event::fire('studioazura.stripe.handleStripeCallback', [ $this, $stripe, $invoice, $address, $redirect ], true)
-        ) {
-            return;
+        if( ($results = $this->fireEvent($signal, $params)) || ($results = Event::fire($signal, $params)) ) {
+            return $results;
         }
 
         return $this->stripe_charge($stripe, $invoice, $address, $redirect);
@@ -128,9 +129,10 @@ class Stripe extends ComponentBase
 
     public function stripe_charge($stripe, $invoice, $address, $redirect)
     {
-        if(!(($postData = $this->fireEvent('studioazura.stripe.setChargePostData', [ $this, $stripe, $invoice, $address ], true)) ||
-            ($postData = Event::fire('studioazura.stripe.setChargePostData', [ $this, $stripe, $invoice, $address ], true)))
-        ) {
+        $signal = 'studioazura.stripe.setChargePostData';
+        $params = [ $this, $stripe, $invoice, $address ];
+
+        if(!( ($postData = $this->fireEvent($signal, $params, true)) || ($postData = Event::fire($signal, $params, true)) )) {
             $postData = array( 
               'source' => $stripe['id'],
               'amount' => $invoice['amount'] * 100,
@@ -151,10 +153,11 @@ class Stripe extends ComponentBase
 
         $response = $request->send();
 
+        $signal 'studioazura.stripe.handleStripeChargeResponse';
+        $params = [ $this, $response, $redirect ];
+
         // hook to handle routing after stripe_charge()
-        if( ($results = $this->fireEvent('studioazura.stripe.handleStripeChargeResponse', [ $this, $response, $redirect ])) || 
-            ($results = Event::fire('studioazura.stripe.handleStripeChargeResponse', [ $this, $response, $redirect ]))
-        ) {
+        if( ($results = $this->fireEvent($signal, $params)) || ($results = Event::fire($signal, $params))) {
             return $results;
         }
 
