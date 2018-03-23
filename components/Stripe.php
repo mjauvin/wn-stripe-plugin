@@ -115,12 +115,11 @@ class Stripe extends ComponentBase
         $address = post('addressData');
         $redirect = post('redirect');
 
-        $signal = 'stripe.handleStripeCallback';
         $params = [ $this, $stripe, $invoice, $address, $redirect ];
 
         // hook before stripe_charge()
         // if the hook returns something true, bypass the stripe_charge() call
-        if( ($results = $this->fireEvent($signal, $params, true)) || ($results = Event::fire('studioazura.' . $signal, $params, true)) ) {
+        if( ($results = Event::fire('studioazura.stripe.handleStripeCallback', $params, true)) ) {
             return $results;
         }
 
@@ -141,11 +140,8 @@ class Stripe extends ComponentBase
           ),
         );
 
-        $signal = 'stripe.setChargePostData';
         $params = [ $this, &$postData, $stripe, $invoice, $address ];
-
-        $this->fireEvent($signal, $params);
-        Event::fire('studioazura.' . $signal, $params);
+        Event::fire('studioazura.stripe.setChargePostData', $params);
 
         Log::info( var_export($postData, true) );
 
@@ -155,11 +151,9 @@ class Stripe extends ComponentBase
 
         $response = $request->send();
 
-        $signal = 'stripe.handleStripeChargeResponse';
         $params = [ $this, $response, $redirect ];
-
         // hook to handle routing after stripe_charge()
-        if( ($results = $this->fireEvent($signal, $params)) || ($results = Event::fire('studioazura.' . $signal, $params))) {
+        if( ($results = Event::fire('studioazura.stripe.handleStripeChargeResponse', $params))) {
             return $results;
         }
 

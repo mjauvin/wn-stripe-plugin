@@ -148,19 +148,19 @@ You can hook into the following events from the page php code block:
     [stripe]
     isTestMode = "true"
     ==
+    use Event;
+
     function onInit()
     {
-        $component = $this['stripe'];
-    
-        $component->bindEvent('studioazure.stripe.handleStripeCallback', function($self, $stripe, $invoice, $address, $redirect) {
+        Event::listen('studioazure.stripe.handleStripeCallback', function($self, $stripe, $invoice, $address, $redirect) {
             // Code to bypass the plugin and handle the payment
         });
     
-        $component->bindEvent('studioazura.stripe.setChargePostData', function($self, &$postData, $stripe, $invoice, $address) {
+        Event::listen('studioazura.stripe.setChargePostData', function($self, &$postData, $stripe, $invoice, $address) {
             // Code to modify the payment data before the payment request has been sent to stripe
         });
     
-        $component->bindEvent('studioazura.stripe.handleStripeChargeResponse', function($self, $response, $redirect) {
+        Event::listen('studioazura.stripe.handleStripeChargeResponse', function($self, $response, $redirect) {
             // Code to handle the response after the payment request has been sent to stripe
         });
     }
@@ -179,9 +179,11 @@ Here is an example to setup the postData for the stripe charges API call from a 
     isTestMode = true
     locale = "auto"
     ==
+    use Event;
+
     function onInit()
     {
-        $this['stripe']->bindEvent('studioazura.stripe.setChargePostData', function($self, &$postData, $stripe, $invoice, $address) {
+        Event::listen('studioazura.stripe.setChargePostData', function($self, &$postData, $stripe, $invoice, $address) {
             // override amount and description; add key to metadata
             $postData['amount'] = 29.99 * 100;
             $postData['description'] = 'My Overriden Description';
