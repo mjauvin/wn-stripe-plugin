@@ -106,7 +106,6 @@ class Stripe extends ComponentBase
     public function onRun()
     {
         $this->addJs('assets/js/ajax.js');
-        $this->controller->vars['viewBag']->setProperty('new_prop', 'new val');
     }
 
     public function onStripeCallback()

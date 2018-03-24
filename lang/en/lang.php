@@ -1,7 +1,7 @@
 <?php return [
     'plugin' => [
         'name' => 'Stripe',
-        'description' => 'Stripe Payment integration',
+        'description' => 'Stripe Payment Widget integration',
     ],
     'settings' => [
         'label'       => 'Stripe',
