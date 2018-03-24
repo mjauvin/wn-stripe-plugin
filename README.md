@@ -45,6 +45,12 @@ Example page code to use the default component markup:
     title = "test page"
     url = "/test"
     is_hidden = 0
+
+    [viewBag]
+    redirectUrl = "/thankyou"
+    emailAddress = "user@domain.tld"
+    orderAmount = 24.95
+    orderDescription = "My viewBag Description"
     
     [stripe]
     isTestMode = true
@@ -53,19 +59,14 @@ Example page code to use the default component markup:
     <h2>My Order Form</h2>
     <hr>
     <form>
-      <input type="hidden" id="redirectUrl" value="/thankyou">
-      <input type="hidden" id="orderDescription" value="My Order Description">
-      <input type="hidden" id="orderAmount" value="24.95">
       <button id="stripeCheckout">Checkout</button>
     </form>
     
     {% component 'stripe' %}
 
-The hidden input fields and the button above are mandatory for the default component markup to work.
+Note: the button above and the viewBag properties are mandatory for the default component markup to work.
 
-The emailAddress field as shown below is optional and will be used to pre-fill the email address in the Stripe widget if provided:
-
-      <input type="hidden" id="emailAddress" value="user@domain.tld">
+The emailAddress viewBag property is optional and will be used to pre-fill the email address in the Stripe widget if provided:
 
 The component will get inserted directly in the layout using the `{% scripts %}` anonymous placeholder, not directly in the page's content.
 
@@ -143,7 +144,7 @@ The default markup injects the stripe code in the scripts anonymous placeholder 
 
 ## Hooking into this plugin
 
-You can hook into the following events from the page php code block:
+You can hook into the following events from the php code block in pages/layout or partials (see page.htm code below):  
 
     [stripe]
     isTestMode = "true"
@@ -165,15 +166,22 @@ You can hook into the following events from the page php code block:
         });
     }
     ==
-    {# page twig code here #}
+    {# twig markup for the page here #}
     ...
+***Note: the $postData variable above is a reference, so it can be modified from within your hook function.
 
-Here is an example to setup the postData for the stripe charges API call from a hook:
+Here is a complete working example on how to setup the postData for the stripe charges API call from a hook:
 
-    title = "test"
-    url = "/test"
-    layout = "no-banner"
+    title = "test payment page"
+    url = "/payment"
+    layout = "default"
     is_hidden = 0
+    
+    [viewBag]
+    redirectUrl = "/thankyou"
+    emailAddress = "user@domain.tld"
+    orderAmount = 24.95
+    orderDescription = "Order Description from viewBag"
     
     [stripe]
     isTestMode = true
@@ -183,6 +191,9 @@ Here is an example to setup the postData for the stripe charges API call from a 
 
     function onInit()
     {
+        // this is how you can dynamically set viewBag properties from within your PHP code block
+        $this['viewBag']->setProperty('redirectUrl', '/order_completed);
+
         Event::listen('studioazura.stripe.setChargePostData', function($self, &$postData, $stripe, $invoice, $address) {
             // override amount and description; add key to metadata
             $postData['amount'] = 29.99 * 100;
@@ -191,13 +202,14 @@ Here is an example to setup the postData for the stripe charges API call from a 
         });
     }
     ==
+    <style>
+      input,label { display:block; margin-bottom: 0.5em; }
+      button { margin-top:1em; }
+    </style>
     <h2>My Order</h2>
     <form>
-      <input type="hidden" id="redirectUrl" value="/thankyou">
-      <input type="hidden" id="emailAddress" value="user@domain.tld">
-      <input type="hidden" id="orderDescription" value="My Order Description">
-      <input type="hidden" id="orderAmount" value="34.95">
+      <label>Item: {{viewBag.orderDescription}}</label>
+      <label>Price: {{viewBag.orderAmount}}</label>
       <button id="stripeCheckout">Checkout</button>
     </form>
     {% component 'stripe' %}
-    

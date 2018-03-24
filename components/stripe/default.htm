@@ -11,7 +11,7 @@
       image: "{{ __SELF__.logo }}",
       locale: "{{ __SELF__.locale }}",
       currency: "{{ __SELF__.currency }}",
-      email: $('#emailAddress').val(),
+      email:"{{viewBag.emailAddress}}",
     {% if __SELF__.billingAddress %}
       billingAddress: true,
     {% endif %}
@@ -21,10 +21,9 @@
     {% if __SELF__.billingAddress and __SELF__.zipCode %}
       zipCode: true,
     {% endif %}
-
       token: function(token, args) {
         $.request('{{ __SELF__ }}::onStripeCallback', {
-            data: {'stripeData':token, 'invoiceData':get_order_data(), 'addressData':args, 'redirect':$('#redirectUrl').val() },
+            data: {'stripeData':token, 'invoiceData':get_order_data(), 'addressData':args, 'redirect':"{{viewBag.redirectUrl}}" },
         });
       }
     });
@@ -40,7 +39,7 @@
     });
 
     function get_order_data() {
-      return {'amount': $('#orderAmount').val(), 'description': $('#orderDescription').val()}
+      return { 'amount':{{viewBag.orderAmount}}, 'description':"{{viewBag.orderDescription}}", }
     }
 
     window.addEventListener('popstate', function() {
