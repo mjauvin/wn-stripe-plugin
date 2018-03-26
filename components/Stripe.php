@@ -23,7 +23,7 @@ class Stripe extends ComponentBase
 
     public function defineProperties()
     {
-        $currency = Settings::get('currency') ? Settings::get('currency') : 'USD';
+        $currency = Settings::get('currency') ?: 'USD';
 
         return [
             'isTestMode' => [
