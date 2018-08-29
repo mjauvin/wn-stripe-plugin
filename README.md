@@ -37,6 +37,7 @@ The following properties can be used in the component inspector:
 - isTestMode (allows choosing the test pub/secret keys for testing)
 - currency (defaults to plugin setting)
 - locale (defaults to auto)
+- appName (defaults to config('app.name') )
 
 ## Usage
 
@@ -74,8 +75,6 @@ The component will get inserted directly in the layout using the `{% scripts %}`
 
 The following public variables are available in the component:
 
-- appName
-	Set to config(app.name)
 - pubKey
 	Point to the publishable key for the component's mode (live or test)
 - secretKey
@@ -105,6 +104,7 @@ The default markup injects the stripe code in the scripts anonymous placeholder 
           image: "{{ __SELF__.logo }}",
           locale: "{{ __SELF__.locale }}",
           currency: "{{ __SELF__.currency }}",
+          email:"{{viewBag.emailAddress}}",
         {% if __SELF__.billingAddress %}
           billingAddress: true,
         {% endif %}
@@ -116,7 +116,7 @@ The default markup injects the stripe code in the scripts anonymous placeholder 
         {% endif %}
           token: function(token, args) {
             $.request('{{ __SELF__ }}::onStripeCallback', {
-                data: {'stripeData':token, 'invoiceData':get_order_data(), 'addressData':args, 'redirect':$('#redirectUrl').val() },
+                data: {'stripeData':token, 'invoiceData':get_order_data(), 'addressData':args, 'redirect':"{{viewBag.redirectUrl}}" },
             });
           }
         });
@@ -132,12 +132,12 @@ The default markup injects the stripe code in the scripts anonymous placeholder 
         });
     
         function get_order_data() {
-          return {'amount': $('#orderAmount').val(), 'description': $('#orderDescription').val()}
+          return { 'currency':"{{ __SELF__.currency }}", 'amount':{{viewBag.orderAmount}}, 'description':"{{viewBag.orderDescription}}", }
         }
     
         window.addEventListener('popstate', function() {
           checkout.close();
-        });
+        }, {passive: true});
       </script>
       {% endput %}
     {% endif %}

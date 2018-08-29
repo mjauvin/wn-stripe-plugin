@@ -39,12 +39,12 @@
     });
 
     function get_order_data() {
-      return { 'amount':{{viewBag.orderAmount}}, 'description':"{{viewBag.orderDescription}}", }
+      return { 'currency':"{{ __SELF__.currency }}", 'amount':{{viewBag.orderAmount}}, 'description':"{{viewBag.orderDescription}}", }
     }
 
     window.addEventListener('popstate', function() {
       checkout.close();
-    });
+    }, {passive: true});
   </script>
   {% endput %}
 {% endif %}

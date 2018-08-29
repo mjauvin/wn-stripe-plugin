@@ -44,6 +44,12 @@ class Stripe extends ComponentBase
                 'type'              => 'string',
                 'default'           => 'auto',
             ],
+            'appName' => [
+                'title'             => 'Application Name',
+                'description'       => 'What to show as Stripe Pop-up Title',
+                'type'              => 'string',
+                'default'           => config('app.name'),
+            ],
         ];
     }
 
@@ -73,7 +79,7 @@ class Stripe extends ComponentBase
 
     public function appName()
     {
-        return config('app.name');
+        return $this->property('appName');
     }
 
     public function logo()
@@ -132,7 +138,7 @@ class Stripe extends ComponentBase
           'source' => $stripe['id'],
           'amount' => $invoice['amount'] * 100,
           'capture' => 'true',
-          'currency' => $this->property('currency'),
+          'currency' => $invoice['currency'],
           'description' => $invoice['description'],
           'metadata' => array(
             'email' => $stripe['email'],
