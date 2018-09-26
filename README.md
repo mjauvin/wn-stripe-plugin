@@ -149,8 +149,6 @@ You can hook into the following events from the php code block in pages/layout o
     [stripe]
     isTestMode = "true"
     ==
-    use Event;
-
     function onInit()
     {
         Event::listen('studioazure.stripe.handleStripeCallback', function($self, $stripe, $invoice, $address, $redirect) {
@@ -187,12 +185,10 @@ Here is a complete working example on how to setup the postData for the stripe c
     isTestMode = true
     locale = "auto"
     ==
-    use Event;
-
     function onInit()
     {
         // this is how you can dynamically set viewBag properties from within your PHP code block
-        $this['viewBag']->setProperty('redirectUrl', '/order_completed);
+        $this['viewBag']->setProperty('redirectUrl', '/order_completed');
 
         Event::listen('studioazura.stripe.setChargePostData', function($self, &$postData, $stripe, $invoice, $address) {
             // override amount and description; add key to metadata
