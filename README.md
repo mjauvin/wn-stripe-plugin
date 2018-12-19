@@ -151,7 +151,7 @@ You can hook into the following events from the php code block in pages/layout o
     ==
     function onInit()
     {
-        Event::listen('studioazure.stripe.handleStripeCallback', function($self, $stripe, $invoice, $address, $redirect) {
+        Event::listen('studioazura.stripe.handleStripeCallback', function($self, $stripe, $invoice, $address, $redirect) {
             // Code to bypass the plugin and handle the payment
         });
     
