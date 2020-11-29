@@ -29,5 +29,5 @@ This plugin creates a Settings menu item, found by navigating to ***Settings > M
 
 #### Two components are available:
 
-- A new SCA complient <a href="https://github.com/mjauvin/oc-stripe-plugin/tree/master/docs/checkout-component.md" target="_blank">Stripe Checkout Component</a>
+- A new <a href="https://github.com/mjauvin/oc-stripe-plugin/tree/master/docs/checkout-component.md" target="_blank">SCA compliant Stripe Checkout Component</a>
 - A <a href="https://github.com/mjauvin/oc-stripe-plugin/tree/master/docs/legacy-component.md" target="_blank">Legacy Stripe Component</a> which is not goind to be updated
