@@ -1,0 +1,8 @@
+{
+    "name": "studioazura/stripe",
+    "type": "october-plugin",
+    "description": "Stripe Checkout integration",
+    "require": {
+        "stripe/stripe-php": "dev-master"
+    }
+}

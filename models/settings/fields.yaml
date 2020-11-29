@@ -1,46 +1,51 @@
 tabs:
   fields:
       logo:
-          label: 'studioazura.stripe::lang.fields.logo.label'
-          comment: 'studioazura.stripe::lang.fields.logo.comment'
+          label: 'studioazura.stripe::lang.settings.fields.logo.label'
+          comment: 'studioazura.stripe::lang.settings.fields.logo.comment'
           commentHtml: true
           type: mediafinder
           mode: image
           tab: 'studioazura.stripe::lang.tabs.general'
       currency:
-          label: 'studioazura.stripe::lang.fields.currency.label'
+          label: 'studioazura.stripe::lang.settings.fields.currency.label'
           default: USD
-          comment: 'studioazura.stripe::lang.fields.currency.comment'
+          comment: 'studioazura.stripe::lang.settings.fields.currency.comment'
           commentHtml: true
           tab: 'studioazura.stripe::lang.tabs.general'
       is_billing_address:
-          label: 'studioazura.stripe::lang.fields.is_billing_address.label'
-          comment: 'studioazura.stripe::lang.fields.is_billing_address.comment'
+          label: 'studioazura.stripe::lang.settings.fields.is_billing_address.label'
+          comment: 'studioazura.stripe::lang.settings.fields.is_billing_address.comment'
           type: switch
           default: 'off'
           tab: 'studioazura.stripe::lang.tabs.general'
       is_shipping_address:
-          label: 'studioazura.stripe::lang.fields.is_shipping_address.label'
-          comment: 'studioazura.stripe::lang.fields.is_shipping_address.comment'
+          label: 'studioazura.stripe::lang.settings.fields.is_shipping_address.label'
+          comment: 'studioazura.stripe::lang.settings.fields.is_shipping_address.comment'
           type: switch
           default: 'off'
           tab: 'studioazura.stripe::lang.tabs.general'
       is_zip_code:
-          label: 'studioazura.stripe::lang.fields.is_zip_code.label'
-          comment: 'studioazura.stripe::lang.fields.is_zip_code.comment'
+          label: 'studioazura.stripe::lang.settings.fields.is_zip_code.label'
+          comment: 'studioazura.stripe::lang.settings.fields.is_zip_code.comment'
           type: switch
           default: 'off'
           tab: 'studioazura.stripe::lang.tabs.general'
       pk_live:
-          label: 'studioazura.stripe::lang.fields.pub_key'
+          label: 'studioazura.stripe::lang.settings.fields.pub_key'
           tab: 'studioazura.stripe::lang.tabs.live'
       sk_live:
-          label: 'studioazura.stripe::lang.fields.secret_key'
+          label: 'studioazura.stripe::lang.settings.fields.secret_key'
+          tab: 'studioazura.stripe::lang.tabs.live'
+      webhook_live:
+          disabled: true
           tab: 'studioazura.stripe::lang.tabs.live'
       pk_test:
-          label: 'studioazura.stripe::lang.fields.pub_key'
+          label: 'studioazura.stripe::lang.settings.fields.pub_key'
           tab: 'studioazura.stripe::lang.tabs.test'
       sk_test:
-          label: 'studioazura.stripe::lang.fields.secret_key'
+          label: 'studioazura.stripe::lang.settings.fields.secret_key'
           tab: 'studioazura.stripe::lang.tabs.test'
-
+      webhook_test:
+          readOnly: true
+          tab: 'studioazura.stripe::lang.tabs.test'

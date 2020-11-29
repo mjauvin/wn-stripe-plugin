@@ -1,50 +1,44 @@
-{% if not __SELF__.pubKey %}
-  <div>
-    <h2>{{ "A Stripe publishable key MUST be defined in the plugin settings"}}</h2>
-  </div>
-{% else %}
-  {% put scripts %}
-  <script src='https://checkout.stripe.com/checkout.js'></script>
-  <script>
-    var checkout = StripeCheckout.configure({
-      key: "{{ __SELF__.pubKey }}",
-      image: "{{ __SELF__.logo }}",
-      locale: "{{ __SELF__.locale }}",
-      currency: "{{ __SELF__.currency }}",
-      email:"{{viewBag.emailAddress}}",
-    {% if __SELF__.billingAddress %}
-      billingAddress: true,
-    {% endif %}
-    {% if __SELF__.shippingAddress %}
-      shippingAddress: true,
-    {% endif %}
-    {% if __SELF__.billingAddress and __SELF__.zipCode %}
-      zipCode: true,
-    {% endif %}
-      token: function(token, args) {
-        $.request('{{ __SELF__ }}::onStripeCallback', {
-            data: {'stripeData':token, 'invoiceData':get_order_data(), 'addressData':args, 'redirect':"{{viewBag.redirectUrl}}" },
-        });
-      }
-    });
-
-    $('#stripeCheckout').click(function(e) {
-      order_data = get_order_data();
-      checkout.open({
-        name: "{{ appName | default(__SELF__.appName) }}",
-        amount: order_data.amount * 100,
-        description: order_data.description,
-      });
-      e.preventDefault();
-    });
-
-    function get_order_data() {
-      return { 'currency':"{{ __SELF__.currency }}", 'amount':{{viewBag.orderAmount}}, 'description':"{{viewBag.orderDescription}}", }
-    }
-
-    window.addEventListener('popstate', function() {
-      checkout.close();
-    }, {passive: true});
-  </script>
-  {% endput %}
+{% put scripts %}
+<script src='https://checkout.stripe.com/checkout.js'></script>
+<script>
+var checkout = StripeCheckout.configure({
+  key: "{{ __SELF__.pubKey }}",
+  image: "{{ __SELF__.logo }}",
+  locale: "{{ __SELF__.locale }}",
+  currency: "{{ __SELF__.currency }}",
+  email:"{{viewBag.emailAddress}}",
+{% if __SELF__.billingAddress %}
+  billingAddress: true,
 {% endif %}
+{% if __SELF__.shippingAddress %}
+  shippingAddress: true,
+{% endif %}
+{% if __SELF__.billingAddress and __SELF__.zipCode %}
+  zipCode: true,
+{% endif %}
+  token: function(token, args) {
+    $.request('{{ __SELF__ }}::onStripeCallback', {
+        data: {'stripeData':token, 'invoiceData':get_order_data(), 'addressData':args, 'redirect':"{{viewBag.redirectUrl}}" },
+    });
+  }
+});
+
+$('#stripeCheckout').click(function(e) {
+  order_data = get_order_data();
+  checkout.open({
+    name: "{{ appName | default(__SELF__.appName) }}",
+    amount: order_data.amount * 100,
+    description: order_data.description,
+  });
+  e.preventDefault();
+});
+
+function get_order_data() {
+  return { 'currency':"{{ __SELF__.currency }}", 'amount':{{viewBag.orderAmount}}, 'description':"{{viewBag.orderDescription}}", }
+}
+
+window.addEventListener('popstate', function() {
+  checkout.close();
+}, {passive: true});
+</script>
+{% endput %}

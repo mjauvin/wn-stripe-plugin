@@ -2,116 +2,25 @@
 
 use Event;
 use Flash;
-use Http;
 use Log;
 use Redirect;
-use ValidationException;
-use Cms\Classes\ComponentBase;
-use StudioAzura\Stripe\Models\Settings;
 
-class Stripe extends ComponentBase
+class Stripe extends BaseStripeComponent
 {
-    public $stripeUrl = "https://api.stripe.com/v1";
-
     public function componentDetails()
     {
         return [
             'name'        => 'Stripe',
-            'description' => 'Stripe API Component',
+            'description' => 'Stripe API Component implements the legacy checkout.js API',
         ];
-    }
-
-    public function defineProperties()
-    {
-        $currency = Settings::get('currency') ?: 'USD';
-
-        return [
-            'isTestMode' => [
-                'title'             => 'Test Mode',
-                'description'       => 'enable stripe test mode',
-                'type'              => 'checkbox',
-                'default'           => false,
-            ],
-            'currency' => [
-                'title'             => 'Currency',
-                'description'       => 'Currency used for the transactions',
-                'type'              => 'string',
-                'default'           => $currency,
-            ],
-            'locale' => [
-                'title'             => 'Locale',
-                'description'       => 'Locale to use with Stripe',
-                'type'              => 'string',
-                'default'           => 'auto',
-            ],
-            'appName' => [
-                'title'             => 'Application Name',
-                'description'       => 'What to show as Stripe Pop-up Title',
-                'type'              => 'string',
-                'default'           => config('app.name'),
-            ],
-        ];
-    }
-
-    public function locale()
-    {
-        return $this->property('locale');
-    }
-
-    public function currency()
-    {
-        return strtoupper($this->property('currency'));
-    }
-
-    public function billingAddress()
-    {
-        return Settings::get('is_billing_address');
-    }
-
-    public function shippingAddress()
-    {
-        return Settings::get('is_shipping_address');
-    }
-    public function zipCode()
-    {
-        return Settings::get('is_zip_code');
-    }
-
-    public function appName()
-    {
-        return $this->property('appName');
-    }
-
-    public function logo()
-    {
-        $logo = Settings::get('logo');
-        if ($logo) {
-            return url(config('cms.storage.media.path') . $logo);
-        } else {
-            return 'https://stripe.com/img/documentation/checkout/marketplace.png';
-        }
-    }
-
-    public function pubKey()
-    {
-        if ($this->property('isTestMode')) {
-            return Settings::get('pk_test');
-        } else {
-            return Settings::get('pk_live');
-        }
-    }
-    public function secretKey()
-    {
-        if ($this->property('isTestMode')) {
-            return Settings::get('sk_test');
-        } else {
-            return Settings::get('sk_live');
-        }
     }
 
     public function onRun()
     {
         $this->addJs('assets/js/ajax.js');
+        if (!$this->pubKey()) {
+            return $this->renderPartial('@need-setup');
+        }
     }
 
     public function onStripeCallback()
@@ -151,11 +60,7 @@ class Stripe extends ComponentBase
 
         Log::info( var_export($postData, true) );
 
-        $request = Http::make($this->stripeUrl . '/charges', 'POST');
-        $request->auth($this->secretKey());
-        $request->data($postData);
-
-        $response = $request->send();
+        $response = $this->stripeRequest('/charges', $postData);
 
         $params = [ $this, $response, $redirect ];
         // hook to handle routing after stripe_charge()
@@ -163,13 +68,7 @@ class Stripe extends ComponentBase
             return $results;
         }
 
-        if ($response->code != 200 && !$response->body) {
-            Log::error( var_export(array('response'=>$response, 'request'=>$request->requestData), true) );
-            Flash::error( 'Fatal Communication Error' );
-            return;
-        }
-        $results = json_decode($response->body, true);
-        if (isset($results['error'])) {
+        if (isset($response['error'])) {
             Log::error( var_export(array('error'=>$results['error'], 'request'=>$request->requestData), true) );
             Flash::error( 'Something went wrong' );
             return;

@@ -1,3 +1,6 @@
 1.0.1: Initial version
 1.0.2: Propagate currency property to onStripeCallback AJAX handler; set appName as a component property.
 1.0.3: Fix typo in the hook example.
+1.0.4:
+    - New Checkout component that supports SCA (Strong Customer Authentication)
+    - add_stripe_webhook.php
