@@ -26,7 +26,6 @@ class addStripeWebhook extends Migration
                             'enabled_events' => ['checkout.session.completed'],
                             'description' => Lang::get('studioazura.stripe::lang.plugin.description'),
                     ]);
-                    echo "\twebhook " . $hook->id . " has been created for " . $mode . " mode.\n";
                 } catch (\Exception $e) {
                 }
                 if ($hook && isset($hook->id)) {
@@ -48,7 +47,6 @@ class addStripeWebhook extends Migration
                 $stripe = new StripeClient(['api_key' => $sk_value]);
                 try {
                     $hook = $stripe->webhookEndpoints->delete($we_value, []);
-                    echo "\twebhook " . $hook->id . " has been removed for " . $mode . " mode.\n";
                     Settings::set($we_key, null);
                 } catch (\Exception $e) {
                 }
