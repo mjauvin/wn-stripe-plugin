@@ -1,7 +1,42 @@
 <?php return [
+    'form' => [
+        'submit_label' => 'Pay by credit card',
+    ],
+    'permissions' => [
+        'manage_settings' => [
+            'label' => 'Manage Stripe Payment Settings',
+            'tab' => 'Stripe',
+        ],
+    ],
     'plugin' => [
         'name' => 'Stripe',
         'description' => 'Stripe Checkout integration',
+    ],
+    'properties' => [
+        'isTestMode' => [
+            'label' => 'Test Mode',
+            'description' => 'enable stripe test mode',
+        ],
+        'currency' => [
+            'label' => 'Currency',
+            'description' => 'Currency used for the transactions',
+        ],
+        'locale' => [
+            'label' => 'Locale',
+            'description' => 'Locale to use with Stripe',
+        ],
+        'appName' => [
+            'label' => 'Application Name',
+            'description' => 'What to show as Stripe Pop-up Title',
+        ],
+        'cancelUrl' => [
+            'label' => 'Payment Cancelled URL',
+            'description' => 'Provide URL path for cancelled payment page',
+        ],
+        'successUrl' => [
+            'label' => 'Payment Completed URL',
+            'description' => 'Provide URL path for completed payment page',
+        ],
     ],
     'settings' => [
         'label'       => 'Stripe',
@@ -33,45 +68,11 @@
             'secret_key' => 'Secret Key',
         ],
     ],
+    'stripe-error' => 'Error redirecting to Stripe checkout.',
     'tabs' => [
         'general' => 'General',
         'live' => 'Live keys',
         'test' => 'Test keys',
-    ],
-    'permissions' => [
-        'manage_settings' => [
-            'label' => 'Manage Stripe Payment Settings',
-            'tab' => 'Stripe',
-        ],
-    ],
-    'form' => [
-        'submit_label' => 'Pay by credit card',
-    ],
-    'properties' => [
-        'isTestMode' => [
-            'label' => 'Test Mode',
-            'description' => 'enable stripe test mode',
-        ],
-        'currency' => [
-            'label' => 'Currency',
-            'description' => 'Currency used for the transactions',
-        ],
-        'locale' => [
-            'label' => 'Locale',
-            'description' => 'Locale to use with Stripe',
-        ],
-        'appName' => [
-            'label' => 'Application Name',
-            'description' => 'What to show as Stripe Pop-up Title',
-        ],
-        'cancelUrl' => [
-            'label' => 'Payment Cancelled URL',
-            'description' => 'Provide URL path for cancelled payment page',
-        ],
-        'successUrl' => [
-            'label' => 'Payment Completed URL',
-            'description' => 'Provide URL path for completed payment page',
-        ],
     ],
     'webhook' => [
         'fetchError' => 'Could not retrieve previously saved webhook.',

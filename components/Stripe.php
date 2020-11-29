@@ -17,10 +17,10 @@ class Stripe extends BaseStripeComponent
 
     public function onRun()
     {
-        $this->addJs('assets/js/ajax.js');
         if (!$this->pubKey()) {
             return $this->renderPartial('@need-setup');
         }
+        $this->addJs('assets/js/ajax.js');
     }
 
     public function onStripeCallback()
