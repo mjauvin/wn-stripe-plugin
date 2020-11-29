@@ -27,7 +27,7 @@ This plugin creates a Settings menu item, found by navigating to ***Settings > M
         Secret key used to complete the payment on the backend (must NOT be used in the form) 
  
 
-Two components are available:
+#### Two components are available:
 
 - A new SCA complient [Stripe Checkout Component](https://github.com/mjauvin/oc-stripe-plugin/tree/master/docs/checkout-component.md)
 - A [legacy Stripe Component](https://github.com/mjauvin/oc-stripe-plugin/tree/master/docs/legacy-component.md) which is not goind to be updated

@@ -4,7 +4,7 @@ This plugin create a checkout session with a prebuilt checkout page hosted on St
 
 A new event has been added to get notified once the payment has been completed:
 
-        \Event::listen('studioazura.stripe.payment.completed', function ($data) {
-            trace_log($data);
-        });
+    \Event::listen('studioazura.stripe.payment.completed', function ($data) {
+        trace_log($data);
+    });
 
