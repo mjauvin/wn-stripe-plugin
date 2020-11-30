@@ -2,7 +2,8 @@
     "name": "studioazura/stripe",
     "type": "october-plugin",
     "description": "Stripe Checkout integration",
+    "keywords": ["stripe","checkout","payment","e-commerce","ecommerce","creditcard","visa","mastercard","amex","paypal","sca","3ds","integration","widget"],
     "require": {
-        "stripe/stripe-php": "dev-master"
+        "stripe/stripe-php": ">=7.66"
     }
 }
