@@ -1,6 +1,6 @@
 #### SCA compliant Stripe Checkout Component
 
-This plugin create a checkout session with a prebuilt checkout page hosted on Stripe.com servers.
+This plugin creates a checkout session with a prebuilt checkout page hosted on Stripe.com servers.
 
 Here is a complete example of a CMS page that uses the component:
 
