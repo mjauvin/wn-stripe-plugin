@@ -5,9 +5,12 @@ This plugin create a checkout session with a prebuilt checkout page hosted on St
 Here is a complete example of a CMS page that use the component:
 
 ```
-title = "Stripe Test Page"                    url = "/stripe"
+title = "Stripe Test Page"
+url = "/stripe"
 layout = "default"
-is_hidden = 0                                 [viewBag]
+is_hidden = 0
+
+[viewBag]
 orderAmount = 25
 orderDescription = "My New Test Order"
 emailAddress = "marc@jauvin.com"
@@ -15,7 +18,8 @@ emailAddress = "marc@jauvin.com"
 [stripeCheckout]
 isTestMode = 1
 currency = "USD"
-locale = "auto"                               cancelUrl = "/payment/cancelled"
+locale = "auto"
+cancelUrl = "/payment/cancelled"
 successUrl = "/payment/completed"
 ==
 {% component "stripeCheckout" %}
