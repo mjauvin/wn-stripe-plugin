@@ -2,7 +2,7 @@
 
 This plugin create a checkout session with a prebuilt checkout page hosted on Stripe.com servers.
 
-Here is a complete example of a CMS page that use the component:
+Here is a complete example of a CMS page that uses the component:
 
 ```
 title = "Stripe Test Page"
