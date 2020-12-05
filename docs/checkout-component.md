@@ -13,7 +13,7 @@ is_hidden = 0
 [viewBag]
 orderAmount = 25
 orderDescription = "My New Test Order"
-emailAddress = "marc@jauvin.com"
+emailAddress = "test.email@domain.tld"
 
 [stripeCheckout]
 isTestMode = 1
