@@ -1,5 +1,8 @@
 <?php
 
 App::before(function ($request) {
-    Route::any('/stripe/checkout/session/completed', '\StudioAzura\Stripe\Controllers\StripeOrders@webhooks')->middleware('web'); 
+    Route::any('/stripe/checkout/session/completed', function () {
+        $checkoutResult = \Request::input();
+        \Event::fire('studioazura.stripe.payment.completed', [$checkoutResult]);
+    })->middleware('web'); 
 });
