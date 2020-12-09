@@ -4,3 +4,4 @@
 1.0.4:
     - New Checkout component that supports SCA (Strong Customer Authentication)
     - add_stripe_webhook.php
+1.0.5: Fix bug when saving settings on initial plugin install
