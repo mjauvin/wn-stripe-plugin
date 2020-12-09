@@ -29,6 +29,9 @@ class Plugin extends PluginBase
     {
         \StudioAzura\Stripe\Models\Settings::extend(function ($model) {
             $model->bindEvent('model.beforeSave', function () use ($model) {
+                if (!isset($model->attributes['value'])) {
+                    return;
+                }
                 $originals = json_decode($model->attributes['value']);
                 foreach(['live', 'test'] as $mode) {
                     $key = 'sk_' . $mode;
