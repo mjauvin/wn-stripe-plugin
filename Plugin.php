@@ -81,6 +81,14 @@ class Plugin extends PluginBase
         ];
     }
 
+    public function registerPageSnippets()
+    {   
+        return [
+            'StudioAzura\Stripe\Components\Stripe' => 'stripe',
+            'StudioAzura\Stripe\Components\Checkout' => 'stripeCheckout',
+        ];
+    }
+
     public function registerSettings()
     {
         return [
