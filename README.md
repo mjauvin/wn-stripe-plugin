@@ -1,1 +1,1 @@
-docs/documentation.md
+marketplace/details-tab.md
