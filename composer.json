@@ -1,7 +1,7 @@
 {
     "name": "studioazura/stripe",
     "author": "Marc Jauvin",
-    "type": "october-plugin",
+    "type": "winter-plugin",
     "description": "Stripe Checkout integration",
     "keywords": ["stripe","checkout","payment","e-commerce","ecommerce","creditcard","visa","mastercard","amex","paypal","sca","3ds","integration","widget"],
     "license": "mit",

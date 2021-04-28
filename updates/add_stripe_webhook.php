@@ -1,7 +1,7 @@
 <?php namespace StudioAzura\Stripe\Updates;
 
 use Lang;
-use October\Rain\Database\Updates\Migration;
+use Winter\Storm\Database\Updates\Migration;
 use Stripe\StripeClient;
 use StudioAzura\Stripe\Models\Settings;
 use StudioAzura\Stripe\Plugin;

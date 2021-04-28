@@ -4,7 +4,7 @@
  
 This plugin requires: 
  
-- `{% scripts %}` placeholder within your layout. ([see the documentation](http://octobercms.com/docs/markup/tag-scripts)) 
+- `{% scripts %}` placeholder within your layout. ([see the documentation](http://wintercms.com/docs/markup/tag-scripts)) 
 - An account with [Stripe](https://stripe.com) 
  
 #### Plugin Settings 
@@ -29,5 +29,5 @@ This plugin creates a Settings menu item, found by navigating to ***Settings > M
 
 #### Two components are available:
 
-- A new <a href="https://github.com/mjauvin/oc-stripe-plugin/tree/master/docs/checkout-component.md" target="_blank">SCA compliant Stripe Checkout Component</a>
-- A <a href="https://github.com/mjauvin/oc-stripe-plugin/tree/master/docs/legacy-component.md" target="_blank">Legacy Stripe Component</a> which is not going to be updated
+- A new <a href="https://github.com/mjauvin/wn-stripe-plugin/tree/master/docs/checkout-component.md" target="_blank">SCA compliant Stripe Checkout Component</a>
+- A <a href="https://github.com/mjauvin/wn-stripe-plugin/tree/master/docs/legacy-component.md" target="_blank">Legacy Stripe Component</a> which is not going to be updated
