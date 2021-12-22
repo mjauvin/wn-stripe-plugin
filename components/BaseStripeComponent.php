@@ -64,6 +64,17 @@ abstract class BaseStripeComponent extends ComponentBase
     {
         return Settings::get('is_shipping_address');
     }
+
+    public function taxCollection()
+    {
+        return Settings::get('is_tax_collection');
+    }
+
+    public function promotionCodes()
+    {
+        return Settings::get('is_promotion_codes');
+    }
+
     public function zipCode()
     {
         return Settings::get('is_zip_code');

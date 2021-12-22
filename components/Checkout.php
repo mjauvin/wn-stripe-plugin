@@ -51,11 +51,12 @@ class Checkout extends BaseStripeComponent
           'mode' => 'payment',
           'line_items' => [[
               'price_data' => [
-                  'currency' => $this->currency(),
                   'product_data' => [
                       'name' => $orderDescription
                   ],
+                  'currency' => $this->currency(),
                   'unit_amount' => (int) $orderAmount * 100,
+                  'tax_behavior' => 'exclusive',
               ],
               'quantity' => 1,
           ]],
@@ -78,8 +79,17 @@ class Checkout extends BaseStripeComponent
             ];
         }
 
+        if ($this->promotionCodes()) {
+            $data['allow_promotion_codes'] = true;
+        }
+
+        if ($this->taxCollection()) {
+            $data['automatic_tax'] = ['enabled' => true];
+        }
+
         $stripe = new StripeClient(['api_key' => $this->secretKey()]);
         $stripeSession = $stripe->checkout->sessions->create($data);
+
         if (!isset($stripeSession->id)) {
             throw new \Exception('Could not create Stripe session.');
         }

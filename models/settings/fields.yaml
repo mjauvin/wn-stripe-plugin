@@ -25,6 +25,18 @@ tabs:
           type: switch
           default: 'off'
           tab: 'studioazura.stripe::lang.tabs.general'
+      is_tax_collection:
+          label: 'studioazura.stripe::lang.settings.fields.is_tax_collection.label'
+          comment: 'studioazura.stripe::lang.settings.fields.is_tax_collection.comment'
+          type: switch
+          default: 'off'
+          tab: 'studioazura.stripe::lang.tabs.general'
+      is_promotion_codes:
+          label: 'studioazura.stripe::lang.settings.fields.is_promotion_codes.label'
+          comment: 'studioazura.stripe::lang.settings.fields.is_promotion_codes.comment'
+          type: switch
+          default: 'off'
+          tab: 'studioazura.stripe::lang.tabs.general'
       is_zip_code:
           label: 'studioazura.stripe::lang.settings.fields.is_zip_code.label'
           comment: 'studioazura.stripe::lang.settings.fields.is_zip_code.comment'

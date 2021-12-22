@@ -60,6 +60,14 @@
                 'label' => 'Collect Shipping Address',
                 'comment' => 'Whether shipping address information should be collected',
             ],
+            'is_tax_collection' => [
+                'label' => 'Collect Taxes',
+                'comment' => 'Whether sales tax should be collected',
+            ],
+            'is_promotion_codes' => [
+                'label' => 'Add promotional codes support',
+                'comment' => 'Whether promotional codes are supported',
+            ],
             'is_zip_code' => [
                 'label' => 'Validate Billing Postal Code',
                 'comment' => 'Whether billing postal code should be validated',
