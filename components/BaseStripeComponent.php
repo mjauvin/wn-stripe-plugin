@@ -52,7 +52,7 @@ abstract class BaseStripeComponent extends ComponentBase
 
     public function currency()
     {
-        return strtoupper($this->property('currency'));
+        return strtolower($this->property('currency'));
     }
 
     public function billingAddress()
