@@ -45,6 +45,7 @@ class Checkout extends BaseStripeComponent
         $email = $this->page->viewBag->property('emailAddress') ?: post('emailAddress');
         $orderAmount = $this->page->viewBag->property('orderAmount') ?: post('orderAmount');
         $orderDescription = $this->page->viewBag->property('orderDescription') ?: post('orderDescription');
+        $productId = $this->page->viewBag->property('productId') ?: post('productId');
 
         $data = array( 
           'payment_method_types' => ['card'],
@@ -63,6 +64,9 @@ class Checkout extends BaseStripeComponent
           'cancel_url' => Url::secure($this->property('cancelUrl')),
           'success_url' => Url::secure($this->property('successUrl')),
           'locale' => $this->locale(),
+          'metadata' => [
+              'product_id' => $productId,
+          ],
         );
 
         if ($email) {

@@ -1,8 +1,10 @@
 <?php
 
-App::before(function ($request) {
+Event::listen('system.route', function () {
     Route::any('/stripe/checkout/session/completed', function () {
         $checkoutResult = Request::input();
-        Event::fire('studioazura.stripe.payment.completed', [$checkoutResult]);
+        if ($checkoutResult) {
+            Event::fire('studioazura.stripe.payment.completed', [$checkoutResult]);
+        }
     })->middleware('web'); 
 });
