@@ -23,24 +23,28 @@ abstract class BaseStripeComponent extends ComponentBase
                 'description'       => 'studioazura.stripe::lang.properties.isTestMode.description',
                 'type'              => 'checkbox',
                 'default'           => false,
+                'showExternalParam' => false,
             ],
             'currency' => [
                 'title'             => 'studioazura.stripe::lang.properties.currency.label',
                 'description'       => 'studioazura.stripe::lang.properties.currency.description',
                 'type'              => 'string',
                 'default'           => $currency,
+                'showExternalParam' => false,
             ],
             'locale' => [
                 'title'             => 'studioazura.stripe::lang.properties.locale.label',
                 'description'       => 'studioazura.stripe::lang.properties.locale.description',
                 'type'              => 'string',
                 'default'           => 'auto',
+                'showExternalParam' => false,
             ],
             'appName' => [
                 'title'             => 'studioazura.stripe::lang.properties.appName.label',
                 'description'       => 'studioazura.stripe::lang.properties.appName.description',
                 'type'              => 'string',
                 'default'           => config('app.name'),
+                'showExternalParam' => false,
             ],
         ];
     }

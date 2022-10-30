@@ -1,5 +1,12 @@
 tabs:
   fields:
+      currency:
+          label: 'studioazura.stripe::lang.settings.fields.currency.label'
+          default: USD
+          comment: 'studioazura.stripe::lang.settings.fields.currency.comment'
+          commentHtml: true
+          tab: 'studioazura.stripe::lang.tabs.general'
+          span: auto
       logo:
           label: 'studioazura.stripe::lang.settings.fields.logo.label'
           comment: 'studioazura.stripe::lang.settings.fields.logo.comment'
@@ -7,12 +14,7 @@ tabs:
           type: mediafinder
           mode: image
           tab: 'studioazura.stripe::lang.tabs.general'
-      currency:
-          label: 'studioazura.stripe::lang.settings.fields.currency.label'
-          default: USD
-          comment: 'studioazura.stripe::lang.settings.fields.currency.comment'
-          commentHtml: true
-          tab: 'studioazura.stripe::lang.tabs.general'
+          span: auto
       is_billing_address:
           label: 'studioazura.stripe::lang.settings.fields.is_billing_address.label'
           comment: 'studioazura.stripe::lang.settings.fields.is_billing_address.comment'

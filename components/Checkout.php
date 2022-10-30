@@ -3,7 +3,9 @@
 use Session;
 use Stripe\StripeClient;
 use StudioAzura\Stripe\Models\Settings;
-use Url;
+
+use Cms\Classes\Controller;
+use Cms\Classes\Theme;
 
 class Checkout extends BaseStripeComponent
 {
@@ -18,18 +20,27 @@ class Checkout extends BaseStripeComponent
     public function defineProperties()
     {
         $properties = parent::defineProperties();
-        $properties['cancelUrl'] = [
-            'title'             => 'studioazura.stripe::lang.properties.cancelUrl.label',
-            'description'       => 'studioazura.stripe::lang.properties.cancelUrl.description',
-            'type'              => 'string',
-            'default'           => Settings::get('cancelUrl', '/payment/cancelled'),
+
+        $properties['cancelPage'] = [
+            'title'             => 'studioazura.stripe::lang.properties.cancelPage.label',
+            'description'       => 'studioazura.stripe::lang.properties.cancelPage.description',
+            'type'              => 'dropdown',
+            'options'           => $this->getCmsPagesOptions(),
+            'emptyOption'       => '-- Select Page --',
+            'required'          => true,
+            'showExternalParam' => false,
         ];
-        $properties['successUrl'] = [
-            'title'             => 'studioazura.stripe::lang.properties.successUrl.label',
-            'description'       => 'studioazura.stripe::lang.properties.successUrl.description',
-            'type'              => 'string',
-            'default'           => Settings::get('successUrl', '/payment/completed'),
+
+        $properties['successPage'] = [
+            'title'             => 'studioazura.stripe::lang.properties.successPage.label',
+            'description'       => 'studioazura.stripe::lang.properties.successPage.description',
+            'type'              => 'dropdown',
+            'options'           => $this->getCmsPagesOptions(),
+            'emptyOption'       => '-- Select Page --',
+            'required'          => true,
+            'showExternalParam' => false,
         ];
+
         return array_except($properties, ['appName']);
     }
 
@@ -40,8 +51,25 @@ class Checkout extends BaseStripeComponent
         }
     }
 
+    public function getCmsPagesOptions()
+    {
+        $theme = Theme::getActiveTheme();
+        $pages = $theme->listPages();
+        $options = [];
+
+        foreach ($pages as $page) {
+            $value = sprintf("[%s]", $page->baseFileName);
+            $options[$page->baseFileName] = strlen($page->title) ? sprintf("%s - %s", $page->title, $value) : $value;
+        }
+        ksort($options);
+
+        return $options;
+    }
+
     public function onStripeCheckout()
     {
+        $controller = Controller::getController() ?? new Controller;
+
         $email = $this->page->viewBag->property('emailAddress') ?: post('emailAddress');
         $orderAmount = $this->page->viewBag->property('orderAmount') ?: post('orderAmount');
         $orderDescription = $this->page->viewBag->property('orderDescription') ?: post('orderDescription');
@@ -61,8 +89,8 @@ class Checkout extends BaseStripeComponent
               ],
               'quantity' => 1,
           ]],
-          'cancel_url' => Url::secure($this->property('cancelUrl')),
-          'success_url' => Url::secure($this->property('successUrl')),
+          'cancel_url' => $controller->pageUrl($this->property('cancelPage'), false),
+          'success_url' => $controller->pageUrl($this->property('successPage'), false),
           'locale' => $this->locale(),
           'metadata' => [
               'product_id' => $productId,

@@ -29,13 +29,13 @@
             'label' => 'Application Name',
             'description' => 'What to show as Stripe Pop-up Title',
         ],
-        'cancelUrl' => [
-            'label' => 'Payment Cancelled URL',
-            'description' => 'Provide URL path for cancelled payment page',
+        'cancelPage' => [
+            'label' => 'Cancelled Payment Page',
+            'description' => 'Provide a page for cancelled payments',
         ],
-        'successUrl' => [
-            'label' => 'Payment Completed URL',
-            'description' => 'Provide URL path for completed payment page',
+        'successPage' => [
+            'label' => 'Completed Payment Page',
+            'description' => 'Provide a page for completed payments',
         ],
     ],
     'settings' => [
