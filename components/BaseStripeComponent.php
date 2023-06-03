@@ -101,7 +101,7 @@ abstract class BaseStripeComponent extends ComponentBase
 
     public function pubKey()
     {
-        if ($this->page->dev || $this->property('isTestMode')) {
+        if ($this->property('isTestMode')) {
             return Settings::get('pk_test');
         } else {
             return Settings::get('pk_live');
@@ -110,7 +110,7 @@ abstract class BaseStripeComponent extends ComponentBase
 
     public function secretKey()
     {
-        if ($this->page->dev || $this->property('isTestMode')) {
+        if ($this->property('isTestMode')) {
             return Settings::get('sk_test');
         } else {
             return Settings::get('sk_live');
