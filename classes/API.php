@@ -8,11 +8,11 @@ class API
 {
     protected static $client = null;
 
-    protected static $mode = 'dev';
+    protected static $testMode = false;
 
     public static function isTestMode() : bool
     {
-        return App::environment() === 'dev' || self::$mode === 'dev';
+        return App::environment() === 'dev' || self::$testMode;
     }
 
     protected static function secretKey()
