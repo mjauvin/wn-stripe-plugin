@@ -94,6 +94,7 @@ class Checkout extends BaseStripeComponent
           'metadata' => post('meta', []),
           'payment_intent_data' => [
               'metadata' => post('meta', []),
+              'description' => $orderDescription,
           ],
         );
 
