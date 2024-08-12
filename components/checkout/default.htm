@@ -1,32 +1,7 @@
-{% put scripts %}
-    <script src='https://js.stripe.com/v3/'></script>
-    <script>
-        var error = null;
-        try {
-            var stripe = Stripe("{{ __SELF__.pubKey }}");
-        } catch(err)  {
-            error = err;
-        }
-        function stripeCheckout(id) {
-            if (stripe && id) {
-                stripe.redirectToCheckout({sessionId: id});
-            } else if (error) {
-                alert(error);
-            } else {
-                alert("{{ 'studioazura.stripe::lang.stripe-error'|trans }}");
-            }
-        }
-    </script>
-{% endput %}
-
 <form>
-    <input type="hidden" name="emailAddress" value="yourname@yourdomain.tld">
-    <input type="hidden" name="orderDescription" value="My Custom Description">
-    <input type="hidden" name="orderAmount" value="20">
-
     <button
         data-request="{{ __SELF__ ~ '::onStripeCheckout' }}"
-        data-request-success="stripeCheckout(data.id)"
+        data-request-data="{{ data }}"
     >Checkout</button>
 </form>
 

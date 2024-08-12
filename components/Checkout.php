@@ -1,6 +1,6 @@
 <?php namespace StudioAzura\Stripe\Components;
 
-use Session;
+use Redirect;
 use Stripe\StripeClient;
 use StudioAzura\Stripe\Models\Settings;
 
@@ -70,11 +70,12 @@ class Checkout extends BaseStripeComponent
     {
         $controller = Controller::getController() ?? new Controller;
 
-        $email = $this->page->viewBag->property('emailAddress') ?: post('emailAddress');
-        $orderAmount = $this->page->viewBag->property('orderAmount') ?: post('orderAmount');
-        $orderDescription = $this->page->viewBag->property('orderDescription') ?: post('orderDescription');
+        $email = post('emailAddress');
+        $orderAmount = post('orderAmount');
+        $orderDescription = post('orderDescription');
+        $meta = post('meta', []);
 
-        $data = array( 
+        $data = [
           'payment_method_types' => ['card'],
           'mode' => 'payment',
           'line_items' => [[
@@ -91,12 +92,12 @@ class Checkout extends BaseStripeComponent
           'cancel_url' => $controller->pageUrl($this->property('cancelPage'), false),
           'success_url' => $controller->pageUrl($this->property('successPage'), false),
           'locale' => $this->locale(),
-          'metadata' => post('meta', []),
+          'metadata' => $meta,
           'payment_intent_data' => [
-              'metadata' => post('meta', []),
+              'metadata' => $meta,
               'description' => $orderDescription,
           ],
-        );
+        ];
 
         if ($email) {
             $data['customer_email'] = $email;
@@ -123,9 +124,10 @@ class Checkout extends BaseStripeComponent
         $stripe = new StripeClient(['api_key' => $this->secretKey()]);
         $stripeSession = $stripe->checkout->sessions->create($data);
 
-        if (!isset($stripeSession->id)) {
+        if (!isset($stripeSession->url)) {
             throw new \Exception('Could not create Stripe session.');
         }
-        return $stripeSession;
+
+        return Redirect::to($stripeSession->url);
     }
 }
