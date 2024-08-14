@@ -84,7 +84,7 @@ class Checkout extends BaseStripeComponent
                       'name' => $orderDescription
                   ],
                   'currency' => $this->currency(),
-                  'unit_amount' => (int) $orderAmount * 100,
+                  'unit_amount' => (float) $orderAmount * 100,
                   'tax_behavior' => 'exclusive',
               ],
               'quantity' => 1,
