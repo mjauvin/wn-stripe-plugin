@@ -41,6 +41,18 @@ class Checkout extends BaseStripeComponent
             'showExternalParam' => false,
         ];
 
+        $properties['captureMode'] = [
+            'title'             => 'studioazura.stripe::lang.properties.captureMode.label',
+            'description'       => 'studioazura.stripe::lang.properties.captureMode.description',
+            'type'              => 'dropdown',
+            'options'           => [
+                'automatic_async' => 'Automatic',
+                'manual' => 'Manual',
+            ],
+            'default'           => 'automatic_async',
+            'showExternalParam' => false,
+        ];
+
         return array_except($properties, ['appName']);
     }
 
@@ -96,6 +108,7 @@ class Checkout extends BaseStripeComponent
           'payment_intent_data' => [
               'metadata' => $meta,
               'description' => $orderDescription,
+              'capture_mode' => $this->property('captureMode'),
           ],
         ];
 

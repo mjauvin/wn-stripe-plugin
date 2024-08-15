@@ -37,6 +37,10 @@
             'label' => 'Completed Payment Page',
             'description' => 'Provide a page for completed payments',
         ],
+        'captureMode' => [
+            'label' => 'Payment Capture Mode',
+            'description' => 'PaymentIntent capture_mode setting',
+        ],
     ],
     'settings' => [
         'label'       => 'Stripe',
