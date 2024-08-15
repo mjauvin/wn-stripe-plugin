@@ -41,9 +41,9 @@ class Checkout extends BaseStripeComponent
             'showExternalParam' => false,
         ];
 
-        $properties['captureMode'] = [
-            'title'             => 'studioazura.stripe::lang.properties.captureMode.label',
-            'description'       => 'studioazura.stripe::lang.properties.captureMode.description',
+        $properties['captureMethod'] = [
+            'title'             => 'studioazura.stripe::lang.properties.captureMethod.label',
+            'description'       => 'studioazura.stripe::lang.properties.captureMethod.description',
             'type'              => 'dropdown',
             'options'           => [
                 'automatic_async' => 'Automatic',
@@ -108,7 +108,7 @@ class Checkout extends BaseStripeComponent
           'payment_intent_data' => [
               'metadata' => $meta,
               'description' => $orderDescription,
-              'capture_mode' => $this->property('captureMode'),
+              'capture_method' => $this->property('captureMethod'),
           ],
         ];
 
@@ -134,8 +134,12 @@ class Checkout extends BaseStripeComponent
             $data['automatic_tax'] = ['enabled' => true];
         }
 
-        $stripe = new StripeClient(['api_key' => $this->secretKey()]);
-        $stripeSession = $stripe->checkout->sessions->create($data);
+        try {
+            $stripe = new StripeClient(['api_key' => $this->secretKey()]);
+            $stripeSession = $stripe->checkout->sessions->create($data);
+        } catch (\Exception $e) {
+            throw new \ApplicationException($e->getMessage());
+        }
 
         if (!isset($stripeSession->url)) {
             throw new \Exception('Could not create Stripe session.');
