@@ -20,7 +20,7 @@ class Stripe extends BaseStripeComponent
         if (!$this->pubKey()) {
             return $this->renderPartial('@need-setup');
         }
-        $this->addJs('assets/js/ajax.js');
+        $this->addJs('assets/js/ajax.js', ['build' => 'StudioAzura.Stripe', 'defer', 'async']);
     }
 
     public function onStripeCallback()
