@@ -88,7 +88,6 @@ class Checkout extends BaseStripeComponent
         $meta = post('meta', []);
 
         $data = [
-          'payment_method_types' => ['card'],
           'mode' => 'payment',
           'line_items' => [[
               'price_data' => [
