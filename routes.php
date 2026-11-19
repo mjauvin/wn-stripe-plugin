@@ -1,7 +1,9 @@
 <?php
 
+use StudioAzura\Stripe\Middleware\VerifyStripeEvent;
+
 Event::listen('system.route', function () {
-    Route::group(['prefix' => 'stripe', 'middleware' => ['web']], function () {
+    Route::group(['prefix' => 'stripe', 'middleware' => [VerifyStripeEvent::class]], function () {
         Route::any('payment/authorized', function () {
             $result = Request::input();
             if ($result) {

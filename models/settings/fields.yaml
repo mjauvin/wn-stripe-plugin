@@ -52,7 +52,10 @@ tabs:
           label: 'studioazura.stripe::lang.settings.fields.secret_key'
           tab: 'studioazura.stripe::lang.tabs.live'
       webhook_live:
-          disabled: true
+          label: Live webhook id
+          tab: 'studioazura.stripe::lang.tabs.live'
+      whsec_live:
+          label: Live webhook secret
           tab: 'studioazura.stripe::lang.tabs.live'
       pk_test:
           label: 'studioazura.stripe::lang.settings.fields.pub_key'
@@ -61,5 +64,8 @@ tabs:
           label: 'studioazura.stripe::lang.settings.fields.secret_key'
           tab: 'studioazura.stripe::lang.tabs.test'
       webhook_test:
-          disabled: true
+          label: Test webhook id
+          tab: 'studioazura.stripe::lang.tabs.test'
+      whsec_test:
+          label: Test webhook secret
           tab: 'studioazura.stripe::lang.tabs.test'
