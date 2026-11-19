@@ -25,6 +25,17 @@ class Plugin extends PluginBase
         ];
     }
 
+    public static function getAppUrl($mode, $path)
+    {
+        if ($mode === 'test') {
+            $mode = "dev";
+        }
+        $appUrl = array_get(array_flip(config('environment.hosts')), $mode);
+        $url = sprintf("https://%s%s", $appUrl, $path);
+
+        return $url;
+    }
+
     public function boot()
     {
         \StudioAzura\Stripe\Models\Settings::extend(function ($model) {
@@ -38,7 +49,7 @@ class Plugin extends PluginBase
                     $we_key = 'webhook_' . $mode;
                     $sk_value = \Input::get('Settings.' . $key);
                     $we_value = \Input::get('Settings.' . $we_key);
-                    if ($sk_value && $originals->$key != $sk_value) {
+                    if ($sk_value) {
                         $stripe = new StripeClient(['api_key' => $sk_value]);
                         if ($we_value) {
                             try {
@@ -51,10 +62,11 @@ class Plugin extends PluginBase
                         if (!$we_value) {
                             try {
                                 $hook = $stripe->webhookEndpoints->create([
-                                    'url' => Url::secure(static::$webhook),
+                                    'url' => static::getAppUrl($mode, static::$webhook),
                                     'enabled_events' => ['checkout.session.completed'],
                                     'description' => Lang::get('studioazura.stripe::lang.plugin.description'),
                                 ]);
+                                $model->setSettingsValue('whsec_' . $mode, $hook->secret);
                             } catch (\Exception $e) {
                                 trace_log($e);
                                 $hook = null;
