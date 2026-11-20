@@ -96,7 +96,7 @@ class Checkout extends BaseStripeComponent
                   ],
                   'currency' => $this->currency(),
                   'unit_amount' => (float) $orderAmount * 100,
-                  'tax_behavior' => 'exclusive',
+                  'tax_behavior' => $this->taxCollection() ? 'exclusive' : 'inclusive',
               ],
               'quantity' => 1,
           ]],
@@ -108,6 +108,9 @@ class Checkout extends BaseStripeComponent
               'metadata' => $meta,
               'description' => $orderDescription,
               'capture_method' => $this->property('captureMethod'),
+          ],
+          'automatic_tax' => [
+              'enabled' => $this->taxCollection() ? true : false,
           ],
         ];
 
@@ -127,10 +130,6 @@ class Checkout extends BaseStripeComponent
 
         if ($this->promotionCodes()) {
             $data['allow_promotion_codes'] = true;
-        }
-
-        if ($this->taxCollection()) {
-            $data['automatic_tax'] = ['enabled' => true];
         }
 
         try {
