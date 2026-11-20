@@ -69,3 +69,4 @@ tabs:
       whsec_test:
           label: Test webhook secret
           tab: 'studioazura.stripe::lang.tabs.test'
+

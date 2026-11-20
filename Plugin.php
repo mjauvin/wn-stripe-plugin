@@ -4,6 +4,7 @@ use Backend;
 use Flash;
 use Lang;
 use Stripe\StripeClient;
+use StudioAzura\Stripe\Models\Settings;
 use System\Classes\PluginBase;
 use Url;
 
@@ -12,8 +13,6 @@ use Url;
  */
 class Plugin extends PluginBase
 {
-    public static $webhook = '/stripe/checkout/session/completed';
-
     public function pluginDetails()
     {
         return [
@@ -25,30 +24,39 @@ class Plugin extends PluginBase
         ];
     }
 
-    public static function getAppUrl($mode, $path)
-    {
-        if ($mode === 'test') {
-            $mode = "dev";
-        }
-        $appUrl = array_get(array_flip(config('environment.hosts')), $mode);
-        $url = sprintf("https://%s%s", $appUrl, $path);
-
-        return $url;
-    }
-
     public function boot()
     {
-        \StudioAzura\Stripe\Models\Settings::extend(function ($model) {
-            $model->bindEvent('model.beforeSave', function () use ($model) {
-                if (!isset($model->attributes['value'])) {
+        Settings::extend(function () {
+            $this->addDynamicMethod('getWebHook', function ($mode) {
+                $sk = Settings::get('sk_' . $mode);
+                $stripe = new StripeClient(['api_key' => $sk]);
+                foreach($stripe->webhookEndpoints->all() as $wh) {
+                    if (in_array('checkout.session.completed', $wh->enabled_events) && $wh->status === 'enabled') {
+                        return $wh;
+                    }
+                }
+                return null;
+            });
+
+            $this->addDynamicMethod('getAppUrl', function ($mode, $path = 'stripe/checkout/session/completed') {
+                if ($mode === 'test') {
+                    $mode = "dev";
+                }
+                $appUrl = array_get(array_flip(config('environment.hosts')), $mode);
+                $url = sprintf("https://%s/%s", $appUrl, $path);
+
+                return $url;
+            });
+
+            $this->bindEvent('model.beforeSave', function () {
+                if (!isset($this->attributes['value'])) {
                     return;
                 }
-                $originals = json_decode($model->attributes['value']);
+                $originals = json_decode($this->attributes['value']);
                 foreach(['live', 'test'] as $mode) {
-                    $key = 'sk_' . $mode;
-                    $we_key = 'webhook_' . $mode;
-                    $sk_value = \Input::get('Settings.' . $key);
-                    $we_value = \Input::get('Settings.' . $we_key);
+                    $sk_value = \Input::get('Settings.sk_'.$mode);
+                    $we_value = \Input::get('Settings.webhook_'.$mode);
+                    $wh_sec = \Input::get('Settings.whsec_'.$mode);
                     if ($sk_value) {
                         $stripe = new StripeClient(['api_key' => $sk_value]);
                         if ($we_value) {
@@ -59,16 +67,19 @@ class Plugin extends PluginBase
                                 $we_value = null;
                             }
                         }
-                        if (!$we_value) {
+                        if (!($we_value && $wh_sec)) {
                             try {
+                                $oldHook = $this->getWebHook($mode)?->delete();
                                 $hook = $stripe->webhookEndpoints->create([
-                                    'url' => static::getAppUrl($mode, static::$webhook),
+                                    'url' => $this->getAppUrl($mode),
                                     'enabled_events' => ['checkout.session.completed'],
                                     'description' => Lang::get('studioazura.stripe::lang.plugin.description'),
                                 ]);
-                                $model->setSettingsValue('whsec_' . $mode, $hook->secret);
+                                if ($hook && isset($hook->secret)) {
+                                    $this->setSettingsValue('whsec_'.$mode, $hook->secret);
+                                }
                             } catch (\Exception $e) {
-                                trace_log($e);
+                                traceLog($e);
                                 $hook = null;
                             }
                             if (!$hook) {
@@ -76,13 +87,13 @@ class Plugin extends PluginBase
                             }
                         }
                         if ($hook && isset($hook->id) && $hook->id != $we_value) {
-                            $model->setSettingsValue($we_key, $hook->id);
+                            $this->setSettingsValue('webhook_'.$mode, $hook->id);
                             Flash::success(Lang::get('studioazura.stripe::lang.webhook.created'));
                         }
                     }
                 }
             });
-        });
+        }, true);
     }
 
     public function registerComponents()
