@@ -32,7 +32,10 @@ class API
     public static function createPromoCode($coupon, $code)
     {
         return self::getClient()->promotionCodes->create([
-            "coupon" => $coupon,
+            "promotion" => [
+                "type" => "coupon",
+                "coupon" => $coupon,
+            ],
             "code" => $code,
             "max_redemptions" => 1,
         ]);
